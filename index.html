@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Wishes Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ─── Reset & Base ─────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{
+  font-family:'Jost',sans-serif;
+  font-weight:400;
+  background:#FFF8F0;
+  color:#24152D;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ─── Brand + Party Tokens ─────────────────────── */
+:root{
+  --plum:#4A2F58;
+  --plum-deep:#24152D;
+  --plum-pale:#ECE6F1;
+  --gold:#D8C29C;
+  --gold-deep:#8F6F3E;
+  --teal:#2E5F66;
+  --teal-mist:#6E98A0;
+  --cream:#FFF8F0;
+  --border:#E8DDD0;
+  /* party palette */
+  --p-coral:#F2766B;
+  --p-sun:#F5B841;
+  --p-mint:#7BC4A4;
+  --p-sky:#7FA8D9;
+  --p-rose:#E58FB1;
+  --p-lilac:#A98BC4;
+  /* categories */
+  --funny:#F5B841;
+  --funny-bg:#FFF4DB;
+  --funny-ink:#7A5200;
+  --sweet:#E58FB1;
+  --sweet-bg:#FDEEF4;
+  --sweet-ink:#93365D;
+  --inspiring:#6E98A0;
+  --inspiring-bg:#E9F3F4;
+  --inspiring-ink:#22525A;
+}
+
+/* ─── Bunting (flag streamer across the top) ───── */
+.bunting{
+  position:relative;
+  z-index:5;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  padding:0 6px;
+  border-top:3px solid var(--gold-deep);
+  background:var(--plum-deep);
+  transform-origin:top center;
+  animation:sway 6s ease-in-out infinite alternate;
+}
+.flag{
+  width:0;height:0;
+  border-left:15px solid transparent;
+  border-right:15px solid transparent;
+  border-top-width:24px;
+  border-top-style:solid;
+  filter:drop-shadow(0 2px 2px rgba(36,21,45,.35));
+}
+@keyframes sway{
+  from{transform:rotate(.4deg)}
+  to{transform:rotate(-.4deg)}
+}
+
+/* ─── Hanging side streamers ───────────────────── */
+.streamer{
+  position:fixed;
+  top:0;
+  width:14px;
+  height:46vh;
+  border-radius:0 0 7px 7px;
+  opacity:.85;
+  z-index:1;
+  transform-origin:top center;
+  animation:streamerSway 5s ease-in-out infinite alternate;
+  pointer-events:none;
+}
+.streamer.s1{left:4vw;background:repeating-linear-gradient(45deg,var(--p-coral) 0 9px,#fff 9px 18px)}
+.streamer.s2{left:11vw;height:34vh;background:repeating-linear-gradient(45deg,var(--p-sun) 0 9px,#fff 9px 18px);animation-delay:-2s}
+.streamer.s3{right:11vw;height:38vh;background:repeating-linear-gradient(45deg,var(--p-mint) 0 9px,#fff 9px 18px);animation-delay:-1s}
+.streamer.s4{right:4vw;background:repeating-linear-gradient(45deg,var(--p-lilac) 0 9px,#fff 9px 18px);animation-delay:-3.2s}
+@keyframes streamerSway{
+  from{transform:rotate(1.6deg)}
+  to{transform:rotate(-1.6deg)}
+}
+
+/* ─── Floating balloons ────────────────────────── */
+#balloons{
+  position:fixed;inset:0;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.balloon{
+  position:absolute;
+  bottom:-140px;
+  width:52px;height:64px;
+  border-radius:50% 50% 50% 50% / 44% 44% 56% 56%;
+  opacity:.8;
+  animation:floatUp linear infinite;
+}
+.balloon::before{ /* knot */
+  content:'';
+  position:absolute;
+  left:50%;bottom:-7px;
+  transform:translateX(-50%);
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-bottom:8px solid;
+  border-bottom-color:inherit;
+}
+.balloon::after{ /* string */
+  content:'';
+  position:absolute;
+  left:50%;bottom:-64px;
+  width:1.5px;height:58px;
+  background:rgba(36,21,45,.25);
+  border-radius:50%;
+}
+.balloon .shine{
+  position:absolute;
+  top:9px;left:11px;
+  width:13px;height:19px;
+  border-radius:50%;
+  background:rgba(255,255,255,.45);
+  transform:rotate(-24deg);
+}
+@keyframes floatUp{
+  0%{transform:translateY(0) translateX(0) rotate(-2deg)}
+  25%{transform:translateY(-28vh) translateX(18px) rotate(3deg)}
+  50%{transform:translateY(-56vh) translateX(-14px) rotate(-3deg)}
+  75%{transform:translateY(-84vh) translateX(16px) rotate(2deg)}
+  100%{transform:translateY(-118vh) translateX(0) rotate(-2deg)}
+}
+
+/* ─── Page Header ──────────────────────────────── */
+.page-header{
+  position:relative;
+  z-index:2;
+  background:var(--plum);
+  color:#fff;
+  padding:2.4rem 2rem 2.2rem;
+  text-align:center;
+  overflow:hidden;
+}
+.page-header .confetti-dot{
+  position:absolute;
+  width:8px;height:8px;
+  border-radius:2px;
+  opacity:.5;
+}
+.brand-name{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:300;
+  font-size:11px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--gold);
+  opacity:.9;
+  display:block;
+  margin-bottom:6px;
+}
+.wall-title{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:400;
+  font-size:44px;
+  line-height:1.05;
+  letter-spacing:.01em;
+}
+.wall-title .bday-emoji{
+  display:inline-block;
+  animation:bounce 2.2s ease-in-out infinite;
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0) rotate(-4deg)}
+  50%{transform:translateY(-8px) rotate(4deg)}
+}
+.wall-sub{
+  font-size:13px;
+  font-weight:300;
+  color:rgba(255,255,255,.72);
+  letter-spacing:.05em;
+  margin-top:8px;
+}
+.header-actions{
+  margin-top:1.3rem;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.btn{
+  font-family:'Jost',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.05em;
+  cursor:pointer;
+  border-radius:24px;
+  padding:10px 22px;
+  border:1px solid transparent;
+  transition:transform .15s,box-shadow .15s,background .15s;
+  text-decoration:none;
+  display:inline-block;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn-reveal{
+  background:linear-gradient(135deg,var(--gold),#E9D6AE);
+  color:var(--plum-deep);
+  box-shadow:0 3px 14px rgba(216,194,156,.45);
+}
+.btn-reveal:hover{box-shadow:0 5px 18px rgba(216,194,156,.65)}
+.btn-ghost{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.3);
+  color:#fff;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.2)}
+
+/* ─── Main ─────────────────────────────────────── */
+.main{
+  position:relative;
+  z-index:2;
+  max-width:1180px;
+  margin:0 auto;
+  padding:2rem 2rem 4rem;
+}
+
+/* ─── Gift goal widget ─────────────────────────── */
+.goal-widget{
+  background:#fff;
+  border:1px solid var(--gold);
+  border-radius:14px;
+  box-shadow:0 6px 24px rgba(143,111,62,.14);
+  padding:1.2rem 1.4rem 1.1rem;
+  max-width:640px;
+  margin:0 auto 2.2rem;
+}
+.gw-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:.7rem;
+}
+.gw-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:21px;
+  font-weight:500;
+  color:var(--plum);
+}
+.gw-pay{
+  font-size:12.5px;
+  font-weight:600;
+  letter-spacing:.04em;
+  color:#fff;
+  background:var(--teal);
+  padding:7px 16px;
+  border-radius:18px;
+  text-decoration:none;
+  white-space:nowrap;
+  transition:transform .15s,box-shadow .15s;
+}
+.gw-pay:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(46,95,102,.35)}
+.gw-bar{
+  height:18px;
+  border-radius:10px;
+  background:var(--cream);
+  border:1px solid var(--border);
+  overflow:hidden;
+}
+.gw-fill{
+  height:100%;
+  width:0;
+  border-radius:10px;
+  background:repeating-linear-gradient(45deg,var(--p-sun) 0 12px,var(--p-coral) 12px 24px,var(--p-rose) 24px 36px,var(--p-mint) 36px 48px);
+  background-size:200% 100%;
+  transition:width .8s cubic-bezier(.2,.8,.3,1);
+  animation:barShimmer 6s linear infinite;
+}
+@keyframes barShimmer{
+  from{background-position:0 0}
+  to{background-position:96px 0}
+}
+.gw-meta{
+  margin-top:.55rem;
+  font-size:12px;
+  color:var(--teal);
+  letter-spacing:.03em;
+}
+.gw-meta strong{color:var(--gold-deep)}
+.gw-note{
+  margin-top:.2rem;
+  font-size:10.5px;
+  color:var(--teal-mist);
+  font-style:italic;
+}
+
+/* ─── Add-a-wish form ──────────────────────────── */
+.wish-form{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  box-shadow:0 6px 28px rgba(74,47,88,.08);
+  padding:1.6rem 1.7rem 1.5rem;
+  max-width:640px;
+  margin:0 auto 2.6rem;
+  position:relative;
+}
+.wish-form::before{ /* washi tape */
+  content:'';
+  position:absolute;
+  top:-13px;left:50%;
+  transform:translateX(-50%) rotate(-2deg);
+  width:110px;height:26px;
+  background:rgba(216,194,156,.65);
+  border-radius:2px;
+}
+.form-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;
+  font-weight:500;
+  color:var(--plum);
+  text-align:center;
+  margin-bottom:.35rem;
+}
+.form-hint{
+  font-size:12px;
+  color:var(--teal-mist);
+  text-align:center;
+  margin-bottom:1.2rem;
+}
+.f-row{margin-bottom:1rem}
+.f-label{
+  display:block;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--teal);
+  margin-bottom:5px;
+}
+.f-input,.f-textarea{
+  width:100%;
+  font-family:'Jost',sans-serif;
+  font-size:14px;
+  color:var(--plum-deep);
+  background:var(--cream);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+.f-input:focus,.f-textarea:focus{
+  border-color:var(--plum);
+  box-shadow:0 0 0 3px rgba(74,47,88,.1);
+}
+.f-textarea{resize:vertical;min-height:88px;line-height:1.55}
+.char-count{
+  font-size:11px;
+  color:var(--teal-mist);
+  text-align:right;
+  margin-top:3px;
+}
+
+/* category chips */
+.cat-chips{display:flex;gap:8px;flex-wrap:wrap}
+.cat-chip{
+  flex:1;
+  min-width:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:10px 8px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+  font-family:'Jost',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  color:var(--plum-deep);
+  transition:all .15s;
+  user-select:none;
+}
+.cat-chip input{position:absolute;opacity:0;pointer-events:none}
+.cat-chip .ce{font-size:17px}
+.cat-chip:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(74,47,88,.1)}
+.cat-chip.sel-funny{background:var(--funny-bg);border-color:var(--funny);color:var(--funny-ink)}
+.cat-chip.sel-sweet{background:var(--sweet-bg);border-color:var(--sweet);color:var(--sweet-ink)}
+.cat-chip.sel-inspiring{background:var(--inspiring-bg);border-color:var(--inspiring);color:var(--inspiring-ink)}
+.cat-chips.shake{animation:shake .4s}
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  25%{transform:translateX(-5px)}
+  50%{transform:translateX(5px)}
+  75%{transform:translateX(-3px)}
+}
+
+/* photo upload */
+.photo-drop{
+  display:block;
+  border:1.5px dashed var(--border);
+  border-radius:10px;
+  background:var(--cream);
+  padding:14px;
+  text-align:center;
+  cursor:pointer;
+  transition:border-color .15s,background .15s;
+  font-size:13px;
+  color:var(--teal-mist);
+}
+.photo-drop:hover{border-color:var(--gold-deep);background:#FFFDF8}
+.photo-drop input{display:none}
+.photo-preview{
+  display:none;
+  position:relative;
+  margin-top:10px;
+  text-align:center;
+}
+.photo-preview.show{display:block}
+.photo-preview img{
+  max-width:180px;
+  max-height:140px;
+  border-radius:8px;
+  border:3px solid #fff;
+  box-shadow:0 3px 12px rgba(74,47,88,.18);
+}
+.photo-remove{
+  position:absolute;
+  top:-8px;
+  left:calc(50% + 78px);
+  width:22px;height:22px;
+  border-radius:50%;
+  border:none;
+  background:var(--plum);
+  color:#fff;
+  font-size:13px;
+  line-height:1;
+  cursor:pointer;
+}
+
+/* gift chip-in row */
+.gift-row{
+  border:1.5px solid var(--gold);
+  border-radius:10px;
+  background:#FFFDF8;
+  padding:12px 14px;
+}
+.gift-check{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:13.5px;
+  font-weight:500;
+  color:var(--plum-deep);
+  cursor:pointer;
+  user-select:none;
+}
+.gift-check input{width:16px;height:16px;accent-color:var(--gold-deep);cursor:pointer}
+.gift-extra{display:none;margin-top:10px}
+.gift-extra.show{display:block}
+.gift-pay-link{
+  display:inline-block;
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--teal);
+  margin-bottom:8px;
+  text-decoration:underline;
+}
+.gift-note{
+  font-size:11px;
+  color:var(--teal-mist);
+  font-style:italic;
+  margin-top:5px;
+}
+.btn-submit{
+  width:100%;
+  background:var(--plum);
+  color:#fff;
+  border:none;
+  border-radius:24px;
+  padding:12px;
+  font-family:'Jost',sans-serif;
+  font-size:14px;
+  font-weight:500;
+  letter-spacing:.06em;
+  cursor:pointer;
+  transition:transform .15s,box-shadow .15s;
+}
+.btn-submit:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(74,47,88,.3)}
+
+/* ─── Filters ──────────────────────────────────── */
+.wall-hdr{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:.6rem;
+  margin-bottom:1.1rem;
+  padding-bottom:.7rem;
+  border-bottom:1px solid var(--border);
+}
+.wall-hdr-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;
+  font-weight:400;
+  color:var(--plum);
+}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filter-btn{
+  font-family:'Jost',sans-serif;
+  font-size:12px;
+  font-weight:500;
+  letter-spacing:.04em;
+  padding:5px 14px;
+  border-radius:16px;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--teal);
+  cursor:pointer;
+  transition:all .12s;
+}
+.filter-btn:hover:not(.on){background:var(--plum-pale)}
+.filter-btn.on{background:var(--plum);border-color:var(--plum);color:#fff}
+
+/* ─── Wish wall (masonry columns) ──────────────── */
+.wall{
+  columns:280px;
+  column-gap:16px;
+}
+.wish-card{
+  break-inside:avoid;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:1.1rem 1.15rem 1rem;
+  margin:0 0 16px;
+  position:relative;
+  box-shadow:0 4px 16px rgba(74,47,88,.07);
+  animation:cardIn .45s cubic-bezier(.2,.8,.3,1.1) backwards;
+  transition:transform .18s,box-shadow .18s;
+}
+.wish-card:nth-child(3n){transform:rotate(.7deg)}
+.wish-card:nth-child(3n+1){transform:rotate(-.7deg)}
+.wish-card:hover{transform:rotate(0) translateY(-3px);box-shadow:0 8px 24px rgba(74,47,88,.14)}
+@keyframes cardIn{
+  from{opacity:0;transform:scale(.86) translateY(14px)}
+  to{opacity:1;transform:scale(1) translateY(0)}
+}
+.wish-card::before{ /* washi tape */
+  content:'';
+  position:absolute;
+  top:-10px;left:50%;
+  transform:translateX(-50%) rotate(-3deg);
+  width:74px;height:20px;
+  border-radius:2px;
+  opacity:.75;
+}
+.wish-card.cat-funny::before{background:var(--funny)}
+.wish-card.cat-sweet::before{background:var(--sweet)}
+.wish-card.cat-inspiring::before{background:var(--inspiring)}
+
+.wc-photo{
+  width:100%;
+  border-radius:8px;
+  margin-bottom:.8rem;
+  border:3px solid var(--cream);
+  box-shadow:0 2px 8px rgba(74,47,88,.12);
+  display:block;
+}
+.wc-msg{
+  font-family:'Cormorant Garamond',serif;
+  font-size:17.5px;
+  font-weight:500;
+  font-style:italic;
+  line-height:1.5;
+  color:var(--plum-deep);
+  margin-bottom:.8rem;
+  overflow-wrap:break-word;
+}
+.wc-foot{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.wc-name{
+  font-size:12.5px;
+  font-weight:600;
+  color:var(--teal);
+  letter-spacing:.03em;
+  overflow-wrap:anywhere;
+}
+.wc-name::before{content:'— '}
+.wc-gift{
+  cursor:help;
+  font-style:normal;
+}
+.wc-badge{
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.05em;
+  padding:2px 9px;
+  border-radius:10px;
+  white-space:nowrap;
+}
+.cat-funny .wc-badge{background:var(--funny-bg);color:var(--funny-ink)}
+.cat-sweet .wc-badge{background:var(--sweet-bg);color:var(--sweet-ink)}
+.cat-inspiring .wc-badge{background:var(--inspiring-bg);color:var(--inspiring-ink)}
+.wc-date{
+  font-size:10.5px;
+  color:var(--teal-mist);
+  margin-top:6px;
+}
+.wc-del{
+  position:absolute;
+  top:7px;right:8px;
+  width:22px;height:22px;
+  border-radius:50%;
+  border:none;
+  background:transparent;
+  color:var(--teal-mist);
+  font-size:14px;
+  line-height:1;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity .15s,background .15s;
+}
+.wish-card:hover .wc-del{opacity:.7}
+.wc-del:hover{background:#F7EFEF;color:#A32D2D;opacity:1}
+
+/* empty state */
+.empty{
+  text-align:center;
+  padding:3.5rem 1rem;
+  color:var(--teal-mist);
+}
+.empty .big{font-size:52px;display:block;margin-bottom:.8rem;animation:bounce 2.4s ease-in-out infinite}
+.empty p{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic}
+
+/* ─── Confetti ─────────────────────────────────── */
+#confetti{
+  position:fixed;inset:0;
+  pointer-events:none;
+  z-index:1200;
+  overflow:hidden;
+}
+.cf{
+  position:absolute;
+  top:-16px;
+  width:9px;height:14px;
+  border-radius:2px;
+  animation:cfFall linear forwards;
+}
+@keyframes cfFall{
+  0%{transform:translateY(0) rotate(0) translateX(0);opacity:1}
+  80%{opacity:1}
+  100%{transform:translateY(108vh) rotate(720deg) translateX(var(--drift,0px));opacity:0}
+}
+
+/* ─── Reveal overlay ───────────────────────────── */
+#reveal{
+  position:fixed;inset:0;
+  z-index:1100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:radial-gradient(ellipse at 50% 30%,#5C3B6E 0%,var(--plum-deep) 75%);
+  padding:1.5rem;
+}
+#reveal.open{display:flex}
+.rv-stage{
+  width:100%;
+  max-width:520px;
+  text-align:center;
+  color:#fff;
+}
+.rv-close{
+  position:absolute;
+  top:18px;right:22px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.3);
+  color:#fff;
+  width:36px;height:36px;
+  border-radius:50%;
+  font-size:17px;
+  cursor:pointer;
+  transition:background .15s;
+}
+.rv-close:hover{background:rgba(255,255,255,.25)}
+.rv-kicker{
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:1rem;
+}
+.rv-big{
+  font-family:'Cormorant Garamond',serif;
+  font-size:42px;
+  font-weight:400;
+  line-height:1.1;
+  margin-bottom:.7rem;
+}
+.rv-cake{font-size:64px;display:block;margin-bottom:1.2rem;animation:bounce 2s ease-in-out infinite}
+.rv-text{
+  font-size:14px;
+  font-weight:300;
+  color:rgba(255,255,255,.75);
+  margin-bottom:1.8rem;
+  letter-spacing:.03em;
+}
+.rv-card{
+  background:#FFFDF9;
+  color:var(--plum-deep);
+  border-radius:16px;
+  padding:1.9rem 1.8rem 1.6rem;
+  box-shadow:0 18px 60px rgba(0,0,0,.45);
+  animation:revealPop .6s cubic-bezier(.2,.9,.3,1.25) backwards;
+  position:relative;
+  max-height:70vh;
+  overflow-y:auto;
+}
+@keyframes revealPop{
+  from{opacity:0;transform:scale(.35) rotate(-7deg)}
+  to{opacity:1;transform:scale(1) rotate(0)}
+}
+.rv-card .rc-emoji{font-size:38px;display:block;margin-bottom:.5rem}
+.rv-card .rc-badge{
+  display:inline-block;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  padding:3px 12px;
+  border-radius:12px;
+  margin-bottom:1rem;
+}
+.rv-card.cat-funny .rc-badge{background:var(--funny-bg);color:var(--funny-ink)}
+.rv-card.cat-sweet .rc-badge{background:var(--sweet-bg);color:var(--sweet-ink)}
+.rv-card.cat-inspiring .rc-badge{background:var(--inspiring-bg);color:var(--inspiring-ink)}
+.rv-card .rc-photo{
+  max-width:220px;
+  max-height:180px;
+  border-radius:10px;
+  border:4px solid #fff;
+  box-shadow:0 4px 16px rgba(74,47,88,.25);
+  margin:0 auto 1rem;
+  display:block;
+}
+.rv-card .rc-msg{
+  font-family:'Cormorant Garamond',serif;
+  font-size:24px;
+  font-style:italic;
+  font-weight:500;
+  line-height:1.45;
+  margin-bottom:1rem;
+  overflow-wrap:break-word;
+}
+.rv-card .rc-name{
+  font-size:14px;
+  font-weight:600;
+  color:var(--teal);
+  letter-spacing:.04em;
+}
+.rv-card .rc-name::before{content:'— '}
+.rv-card .rc-gift{
+  margin-top:.6rem;
+  font-size:12px;
+  font-weight:500;
+  color:var(--gold-deep);
+  background:rgba(216,194,156,.25);
+  display:inline-block;
+  padding:3px 12px;
+  border-radius:12px;
+}
+.rv-progress{
+  margin-top:1.2rem;
+  font-size:12px;
+  letter-spacing:.1em;
+  color:rgba(255,255,255,.65);
+}
+.rv-nav{
+  margin-top:1rem;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.rv-hint{
+  margin-top:.9rem;
+  font-size:11px;
+  color:rgba(255,255,255,.4);
+  letter-spacing:.05em;
+}
+.rv-names{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  gap:7px;
+  margin:1.1rem 0 1.6rem;
+}
+.rv-names span{
+  font-size:12px;
+  padding:3px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  color:rgba(255,255,255,.85);
+}
+
+/* ─── Host setup overlay ───────────────────────── */
+#setup{
+  position:fixed;inset:0;
+  z-index:1150;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(36,21,45,.55);
+  padding:1.5rem;
+}
+#setup.open{display:flex}
+.setup-card{
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 18px 60px rgba(0,0,0,.35);
+  padding:1.6rem 1.7rem 1.5rem;
+  width:100%;
+  max-width:440px;
+  max-height:88vh;
+  overflow-y:auto;
+}
+.setup-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:23px;
+  font-weight:500;
+  color:var(--plum);
+  margin-bottom:.3rem;
+}
+.setup-hint{
+  font-size:11.5px;
+  color:var(--teal-mist);
+  margin-bottom:1.1rem;
+  line-height:1.5;
+}
+.setup-actions{
+  display:flex;
+  gap:8px;
+  margin-top:.4rem;
+}
+.setup-actions .btn-submit{flex:1}
+.btn-cancel{
+  flex:0 0 auto;
+  background:#fff;
+  color:var(--teal);
+  border:1px solid var(--border);
+  border-radius:24px;
+  padding:12px 20px;
+  font-family:'Jost',sans-serif;
+  font-size:14px;
+  cursor:pointer;
+}
+.btn-cancel:hover{background:var(--cream)}
+
+/* ─── Footer ───────────────────────────────────── */
+.page-footer{
+  position:relative;
+  z-index:2;
+  background:var(--plum);
+  color:rgba(255,255,255,.5);
+  text-align:center;
+  padding:1.25rem 2rem;
+  font-size:11px;
+  letter-spacing:.06em;
+  font-weight:300;
+}
+.page-footer span{color:var(--gold);opacity:.8}
+
+/* ─── Responsive ───────────────────────────────── */
+@media(max-width:640px){
+  .wall-title{font-size:32px}
+  .main{padding:1.4rem 1rem 3rem}
+  .wish-form{padding:1.3rem 1.1rem 1.2rem}
+  .streamer.s2,.streamer.s3{display:none}
+  .rv-big{font-size:32px}
+  .rv-card .rc-msg{font-size:20px}
+}
+@media (prefers-reduced-motion:reduce){
+  .balloon,.bunting,.streamer,.bday-emoji,.rv-cake,.empty .big,.gw-fill{animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ── Bunting flags ── -->
+<div class="bunting" id="bunting" aria-hidden="true"></div>
+
+<!-- ── Side streamers ── -->
+<div class="streamer s1" aria-hidden="true"></div>
+<div class="streamer s2" aria-hidden="true"></div>
+<div class="streamer s3" aria-hidden="true"></div>
+<div class="streamer s4" aria-hidden="true"></div>
+
+<!-- ── Floating balloons ── -->
+<div id="balloons" aria-hidden="true"></div>
+
+<!-- ── Header ── -->
+<header class="page-header">
+  <span class="brand-name">Birthday Wishes Wall</span>
+  <h1 class="wall-title"><span class="bday-emoji">🎈</span> <span id="title-text">Birthday Wishes Wall</span> <span class="bday-emoji" style="animation-delay:-1.1s">🎂</span></h1>
+  <p class="wall-sub" id="wall-sub">Leave a wish for the birthday star — funny, sweet, or inspiring. Add a photo if you like!</p>
+  <div class="header-actions">
+    <button class="btn btn-reveal" id="btn-reveal">🎁 Reveal for the Birthday Person</button>
+    <a class="btn btn-ghost" href="#add-wish">✍️ Add your wish</a>
+    <button class="btn btn-ghost" id="btn-setup">⚙️ Host setup</button>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main class="main">
+
+  <!-- Gift goal -->
+  <section class="goal-widget" id="goal-widget" hidden>
+    <div class="gw-top">
+      <span class="gw-title" id="gw-title">🎁 Group Gift</span>
+      <a class="gw-pay" id="gw-pay" target="_blank" rel="noopener" hidden>💝 Chip in →</a>
+    </div>
+    <div class="gw-bar" id="gw-bar"><div class="gw-fill" id="gw-fill"></div></div>
+    <p class="gw-meta" id="gw-meta"></p>
+    <p class="gw-note">Amounts stay secret — only the progress is shown. 🤫</p>
+  </section>
+
+  <!-- Add a wish -->
+  <form class="wish-form" id="add-wish" autocomplete="off">
+    <h2 class="form-title">Leave a Birthday Wish</h2>
+    <p class="form-hint">Your wish is pinned straight onto the wall below 🎉</p>
+
+    <div class="f-row">
+      <label class="f-label" for="f-name">Your name</label>
+      <input class="f-input" id="f-name" type="text" maxlength="40" placeholder="e.g. Auntie Rosa" required>
+    </div>
+
+    <div class="f-row">
+      <span class="f-label">Wish category</span>
+      <div class="cat-chips" id="cat-chips">
+        <label class="cat-chip" data-cat="funny"><input type="radio" name="cat" value="funny"><span class="ce">😂</span>Funny</label>
+        <label class="cat-chip" data-cat="sweet"><input type="radio" name="cat" value="sweet"><span class="ce">💖</span>Sweet</label>
+        <label class="cat-chip" data-cat="inspiring"><input type="radio" name="cat" value="inspiring"><span class="ce">✨</span>Inspiring</label>
+      </div>
+    </div>
+
+    <div class="f-row">
+      <label class="f-label" for="f-msg">Your message</label>
+      <textarea class="f-textarea" id="f-msg" maxlength="300" placeholder="Write your birthday wish…" required></textarea>
+      <div class="char-count"><span id="char-count">0</span> / 300</div>
+    </div>
+
+    <div class="f-row">
+      <span class="f-label">Photo <em style="text-transform:none;font-weight:400;letter-spacing:0">(optional)</em></span>
+      <label class="photo-drop" id="photo-drop">
+        📷 Tap to add a photo — a memory, a selfie, anything!
+        <input type="file" id="f-photo" accept="image/*">
+      </label>
+      <div class="photo-preview" id="photo-preview">
+        <img id="photo-img" alt="Photo preview">
+        <button type="button" class="photo-remove" id="photo-remove" aria-label="Remove photo">×</button>
+      </div>
+    </div>
+
+    <div class="f-row gift-row">
+      <span class="f-label">Group gift <em style="text-transform:none;font-weight:400;letter-spacing:0">(optional)</em></span>
+      <label class="gift-check">
+        <input type="checkbox" id="f-gift">
+        🎁 I chipped in for the gift
+      </label>
+      <div class="gift-extra" id="gift-extra">
+        <a class="gift-pay-link" id="gift-pay-link" target="_blank" rel="noopener" hidden>💝 Open the gift kitty to chip in →</a>
+        <input class="f-input" id="f-amount" type="number" min="0" step="0.01" inputmode="decimal" placeholder="How much? (optional — kept secret)" hidden>
+        <p class="gift-note">A 🎁 appears next to your wish. The amount is never shown to anyone — it only nudges the progress bar along.</p>
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">🎉 Pin my wish to the wall</button>
+  </form>
+
+  <!-- Wall -->
+  <div class="wall-hdr">
+    <h2 class="wall-hdr-title" id="wall-count">The Wall</h2>
+    <div class="filters" id="filters">
+      <button class="filter-btn on" data-f="all">All</button>
+      <button class="filter-btn" data-f="funny">😂 Funny</button>
+      <button class="filter-btn" data-f="sweet">💖 Sweet</button>
+      <button class="filter-btn" data-f="inspiring">✨ Inspiring</button>
+    </div>
+  </div>
+  <div class="wall" id="wall"></div>
+  <div class="empty" id="empty" hidden>
+    <span class="big">🎈</span>
+    <p>No wishes pinned yet — be the first to make the birthday star smile!</p>
+  </div>
+</main>
+
+<!-- ── Host setup overlay ── -->
+<div id="setup" role="dialog" aria-modal="true" aria-label="Host setup">
+  <form class="setup-card" id="setup-form">
+    <h2 class="setup-title">⚙️ Host setup</h2>
+    <p class="setup-hint">Personalise the wall for your celebration. Settings are saved in this browser only — set the wall up on the device (or hosted page) your guests will use.</p>
+
+    <div class="f-row">
+      <label class="f-label" for="s-name">Birthday person's name</label>
+      <input class="f-input" id="s-name" type="text" maxlength="40" placeholder="e.g. Maya">
+    </div>
+
+    <div class="f-row">
+      <label class="f-label" for="s-pay">Gift kitty link <em style="text-transform:none;font-weight:400;letter-spacing:0">(optional)</em></label>
+      <input class="f-input" id="s-pay" type="text" maxlength="200" placeholder="e.g. paypal.me/yourname or a Verse/Bizum note">
+      <p class="gift-note">Guests see a "Chip in" button that opens this link. Money goes directly through your payment provider — this page never touches it.</p>
+    </div>
+
+    <div class="f-row">
+      <label class="f-label" for="s-goal">Gift goal <em style="text-transform:none;font-weight:400;letter-spacing:0">(optional — never shown)</em></label>
+      <input class="f-input" id="s-goal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 300">
+      <p class="gift-note">Sets the target for the progress bar. Guests only ever see a percentage — never the goal or any amounts.</p>
+    </div>
+
+    <div class="setup-actions">
+      <button type="submit" class="btn-submit">Save</button>
+      <button type="button" class="btn-cancel" id="setup-cancel">Cancel</button>
+    </div>
+  </form>
+</div>
+
+<!-- ── Reveal overlay ── -->
+<div id="reveal" role="dialog" aria-modal="true" aria-label="Birthday wish reveal">
+  <button class="rv-close" id="rv-close" aria-label="Close reveal">×</button>
+  <div class="rv-stage" id="rv-stage"></div>
+</div>
+
+<!-- ── Confetti layer ── -->
+<div id="confetti" aria-hidden="true"></div>
+
+<footer class="page-footer">
+  <span>Birthday Wishes Wall</span> &nbsp;·&nbsp; wishes, photos &amp; a group gift — all in one festive place
+</footer>
+
+<script>
+'use strict';
+
+/* ── Constants ─────────────────────────────────── */
+const KEY='bw-wishes-v1';
+const SKEY='bw-settings-v1';
+const CATS={
+  funny:{label:'Funny',emoji:'😂'},
+  sweet:{label:'Sweet',emoji:'💖'},
+  inspiring:{label:'Inspiring',emoji:'✨'}
+};
+const PARTY=['#F2766B','#F5B841','#7BC4A4','#7FA8D9','#E58FB1','#A98BC4','#D8C29C'];
+
+/* ── State ─────────────────────────────────────── */
+let wishes=load();
+let settings=loadSettings();
+let filter='all';
+let pendingPhoto=null;
+
+function load(){
+  try{
+    const raw=localStorage.getItem(KEY);
+    const arr=raw?JSON.parse(raw):[];
+    return Array.isArray(arr)?arr.filter(w=>w&&w.name&&w.msg&&CATS[w.cat]):[];
+  }catch(e){return[]}
+}
+function persist(){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(wishes));
+    return true;
+  }catch(e){return false}
+}
+function loadSettings(){
+  try{
+    const s=JSON.parse(localStorage.getItem(SKEY)||'{}');
+    return{
+      honoree:typeof s.honoree==='string'?s.honoree:'',
+      payLink:typeof s.payLink==='string'?s.payLink:'',
+      goal:typeof s.goal==='number'&&s.goal>0?s.goal:0
+    };
+  }catch(e){return{honoree:'',payLink:'',goal:0}}
+}
+function persistSettings(){
+  try{localStorage.setItem(SKEY,JSON.stringify(settings))}catch(e){}
+}
+
+/* ── Settings applied to the page ──────────────── */
+function payHref(){
+  if(!settings.payLink)return'';
+  return/^https?:\/\//i.test(settings.payLink)?settings.payLink:'https://'+settings.payLink;
+}
+function applySettings(){
+  const who=settings.honoree;
+  document.title=who?`Wishes for ${who} · Birthday Wishes Wall`:'Birthday Wishes Wall';
+  document.getElementById('title-text').textContent=who?`Wishes for ${who}`:'Birthday Wishes Wall';
+  document.getElementById('wall-sub').textContent=
+    `Leave a wish for ${who||'the birthday star'} — funny, sweet, or inspiring. Add a photo if you like!`;
+
+  // gift kitty links
+  const href=payHref();
+  const gwPay=document.getElementById('gw-pay');
+  const formPay=document.getElementById('gift-pay-link');
+  gwPay.hidden=formPay.hidden=!href;
+  if(href){gwPay.href=formPay.href=href}
+
+  // secret amount field only matters when a goal is set
+  document.getElementById('f-amount').hidden=!settings.goal;
+
+  renderGoal();
+}
+
+/* ── Gift goal progress (never shows amounts) ──── */
+function renderGoal(){
+  const widget=document.getElementById('goal-widget');
+  const hasKitty=settings.goal>0||!!settings.payLink;
+  widget.hidden=!hasKitty;
+  if(!hasKitty)return;
+
+  document.getElementById('gw-title').textContent=
+    `🎁 Group Gift${settings.honoree?' for '+settings.honoree:''}`;
+
+  const givers=wishes.filter(w=>w.gift).length;
+  const raised=wishes.reduce((s,w)=>s+(w.gift&&typeof w.amt==='number'?w.amt:0),0);
+  const bar=document.getElementById('gw-bar');
+  const meta=document.getElementById('gw-meta');
+
+  if(settings.goal>0){
+    const pct=Math.min(100,Math.round(raised/settings.goal*100));
+    bar.hidden=false;
+    document.getElementById('gw-fill').style.width=pct+'%';
+    meta.innerHTML='';
+    const strong=document.createElement('strong');
+    strong.textContent=pct>=100?'Goal reached! 🎉':pct+'% of the way there';
+    meta.appendChild(strong);
+    meta.appendChild(document.createTextNode(
+      ` · ${givers} ${givers===1?'guest has':'guests have'} chipped in 🎁`));
+  }else{
+    bar.hidden=true;
+    meta.textContent=`${givers} ${givers===1?'guest has':'guests have'} chipped in 🎁`;
+  }
+}
+
+/* ── Decorations: bunting + balloons ───────────── */
+(function bunting(){
+  const el=document.getElementById('bunting');
+  const n=Math.max(12,Math.ceil(window.innerWidth/46));
+  let html='';
+  for(let i=0;i<n;i++){
+    html+=`<span class="flag" style="border-top-color:${PARTY[i%PARTY.length]}"></span>`;
+  }
+  el.innerHTML=html;
+})();
+
+(function balloons(){
+  const el=document.getElementById('balloons');
+  const n=window.innerWidth<640?6:11;
+  for(let i=0;i<n;i++){
+    const b=document.createElement('div');
+    b.className='balloon';
+    const c=PARTY[i%PARTY.length];
+    b.style.background=`radial-gradient(circle at 34% 28%, ${c} 0%, ${c} 60%, rgba(36,21,45,.18) 130%), ${c}`;
+    b.style.borderBottomColor=c;
+    b.style.left=(3+Math.random()*92)+'%';
+    b.style.animationDuration=(16+Math.random()*16)+'s';
+    b.style.animationDelay=(-Math.random()*28)+'s';
+    const s=.7+Math.random()*.6;
+    b.style.width=(52*s)+'px';
+    b.style.height=(64*s)+'px';
+    b.innerHTML='<span class="shine"></span>';
+    el.appendChild(b);
+  }
+})();
+
+(function headerConfetti(){
+  const h=document.querySelector('.page-header');
+  for(let i=0;i<26;i++){
+    const d=document.createElement('span');
+    d.className='confetti-dot';
+    d.style.background=PARTY[i%PARTY.length];
+    d.style.left=Math.random()*100+'%';
+    d.style.top=Math.random()*100+'%';
+    d.style.transform=`rotate(${Math.random()*90}deg)`;
+    h.appendChild(d);
+  }
+})();
+
+/* ── Confetti bursts ───────────────────────────── */
+function confetti(count){
+  const layer=document.getElementById('confetti');
+  for(let i=0;i<count;i++){
+    const c=document.createElement('span');
+    c.className='cf';
+    c.style.left=Math.random()*100+'%';
+    c.style.background=PARTY[(Math.random()*PARTY.length)|0];
+    c.style.setProperty('--drift',(Math.random()*160-80)+'px');
+    c.style.animationDuration=(2.2+Math.random()*2)+'s';
+    c.style.animationDelay=(Math.random()*.5)+'s';
+    if(Math.random()<.4)c.style.borderRadius='50%';
+    layer.appendChild(c);
+    setTimeout(()=>c.remove(),5200);
+  }
+}
+
+/* ── Host setup ────────────────────────────────── */
+const setupEl=document.getElementById('setup');
+document.getElementById('btn-setup').addEventListener('click',()=>{
+  document.getElementById('s-name').value=settings.honoree;
+  document.getElementById('s-pay').value=settings.payLink;
+  document.getElementById('s-goal').value=settings.goal||'';
+  setupEl.classList.add('open');
+});
+document.getElementById('setup-cancel').addEventListener('click',()=>setupEl.classList.remove('open'));
+setupEl.addEventListener('click',e=>{if(e.target===setupEl)setupEl.classList.remove('open')});
+document.getElementById('setup-form').addEventListener('submit',e=>{
+  e.preventDefault();
+  settings.honoree=document.getElementById('s-name').value.trim();
+  settings.payLink=document.getElementById('s-pay').value.trim();
+  const g=parseFloat(document.getElementById('s-goal').value);
+  settings.goal=isFinite(g)&&g>0?g:0;
+  persistSettings();
+  applySettings();
+  setupEl.classList.remove('open');
+  confetti(40);
+});
+
+/* ── Form: category chips ──────────────────────── */
+const chipsEl=document.getElementById('cat-chips');
+chipsEl.addEventListener('change',()=>{
+  chipsEl.querySelectorAll('.cat-chip').forEach(ch=>{
+    const on=ch.querySelector('input').checked;
+    ch.classList.toggle('sel-'+ch.dataset.cat,on);
+    if(!on)ch.classList.remove('sel-funny','sel-sweet','sel-inspiring');
+  });
+});
+
+/* ── Form: character counter ───────────────────── */
+const msgEl=document.getElementById('f-msg');
+msgEl.addEventListener('input',()=>{
+  document.getElementById('char-count').textContent=msgEl.value.length;
+});
+
+/* ── Form: gift chip-in toggle ─────────────────── */
+const giftCheck=document.getElementById('f-gift');
+giftCheck.addEventListener('change',()=>{
+  document.getElementById('gift-extra').classList.toggle('show',giftCheck.checked);
+});
+
+/* ── Form: photo upload (downscaled to data URL) ─ */
+const photoInput=document.getElementById('f-photo');
+const previewWrap=document.getElementById('photo-preview');
+const previewImg=document.getElementById('photo-img');
+
+photoInput.addEventListener('change',()=>{
+  const f=photoInput.files&&photoInput.files[0];
+  if(!f)return;
+  if(!f.type.startsWith('image/')){alert('Please choose an image file.');photoInput.value='';return}
+  const url=URL.createObjectURL(f);
+  const img=new Image();
+  img.onload=()=>{
+    URL.revokeObjectURL(url);
+    const MAX=560;
+    const s=Math.min(1,MAX/Math.max(img.width,img.height));
+    const w=Math.max(1,Math.round(img.width*s)),h=Math.max(1,Math.round(img.height*s));
+    const cv=document.createElement('canvas');
+    cv.width=w;cv.height=h;
+    cv.getContext('2d').drawImage(img,0,0,w,h);
+    pendingPhoto=cv.toDataURL('image/jpeg',.78);
+    previewImg.src=pendingPhoto;
+    previewWrap.classList.add('show');
+  };
+  img.onerror=()=>{
+    URL.revokeObjectURL(url);
+    alert('That image could not be read — try a different one.');
+    photoInput.value='';
+  };
+  img.src=url;
+});
+
+document.getElementById('photo-remove').addEventListener('click',()=>{
+  pendingPhoto=null;
+  photoInput.value='';
+  previewImg.removeAttribute('src');
+  previewWrap.classList.remove('show');
+});
+
+/* ── Form: submit ──────────────────────────────── */
+document.getElementById('add-wish').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=document.getElementById('f-name').value.trim();
+  const msg=msgEl.value.trim();
+  const catInput=chipsEl.querySelector('input:checked');
+  if(!name||!msg)return;
+  if(!catInput){
+    chipsEl.classList.add('shake');
+    setTimeout(()=>chipsEl.classList.remove('shake'),450);
+    return;
+  }
+  const amtRaw=parseFloat(document.getElementById('f-amount').value);
+  const wish={
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),
+    name,msg,cat:catInput.value,
+    photo:pendingPhoto,
+    gift:giftCheck.checked,
+    amt:giftCheck.checked&&isFinite(amtRaw)&&amtRaw>0?amtRaw:0,
+    ts:Date.now()
+  };
+  wishes.push(wish);
+  if(!persist()&&wish.photo){
+    // storage full — retry without the photo
+    wish.photo=null;
+    if(persist()){
+      alert('The wall’s photo storage is full, so your wish was saved without its photo.');
+    }else{
+      wishes.pop();
+      alert('Storage is full — your wish could not be saved. Try removing an older wish first.');
+      return;
+    }
+  }
+  e.target.reset();
+  document.getElementById('char-count').textContent='0';
+  chipsEl.querySelectorAll('.cat-chip').forEach(ch=>ch.classList.remove('sel-funny','sel-sweet','sel-inspiring'));
+  document.getElementById('gift-extra').classList.remove('show');
+  pendingPhoto=null;
+  previewImg.removeAttribute('src');
+  previewWrap.classList.remove('show');
+  renderWall();
+  confetti(60);
+  document.getElementById('wall').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+/* ── Filters ───────────────────────────────────── */
+document.getElementById('filters').addEventListener('click',e=>{
+  const btn=e.target.closest('.filter-btn');
+  if(!btn)return;
+  filter=btn.dataset.f;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('on',b===btn));
+  renderWall();
+});
+
+/* ── Render wall ───────────────────────────────── */
+function renderWall(){
+  const wall=document.getElementById('wall');
+  wall.innerHTML='';
+  const shown=wishes
+    .filter(w=>filter==='all'||w.cat===filter)
+    .slice()
+    .sort((a,b)=>b.ts-a.ts);
+
+  document.getElementById('empty').hidden=shown.length>0;
+  document.getElementById('wall-count').textContent=
+    wishes.length?`The Wall · ${wishes.length} wish${wishes.length===1?'':'es'}`:'The Wall';
+
+  shown.forEach((w,i)=>{
+    const cat=CATS[w.cat];
+    const card=document.createElement('article');
+    card.className='wish-card cat-'+w.cat;
+    card.style.animationDelay=Math.min(i*.05,.45)+'s';
+
+    if(w.photo&&typeof w.photo==='string'&&w.photo.startsWith('data:image/')){
+      const img=document.createElement('img');
+      img.className='wc-photo';
+      img.src=w.photo;
+      img.alt='Photo from '+w.name;
+      card.appendChild(img);
+    }
+    const p=document.createElement('p');
+    p.className='wc-msg';
+    p.textContent='“'+w.msg+'”';
+    card.appendChild(p);
+
+    const foot=document.createElement('div');
+    foot.className='wc-foot';
+    const nm=document.createElement('span');
+    nm.className='wc-name';
+    nm.textContent=w.name;
+    if(w.gift){
+      const g=document.createElement('span');
+      g.className='wc-gift';
+      g.textContent=' 🎁';
+      g.title='Chipped in for the group gift';
+      g.setAttribute('aria-label','Chipped in for the group gift');
+      nm.appendChild(g);
+    }
+    const badge=document.createElement('span');
+    badge.className='wc-badge';
+    badge.textContent=cat.emoji+' '+cat.label;
+    foot.appendChild(nm);
+    foot.appendChild(badge);
+    card.appendChild(foot);
+
+    const date=document.createElement('div');
+    date.className='wc-date';
+    date.textContent='Pinned '+new Date(w.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'});
+    card.appendChild(date);
+
+    const del=document.createElement('button');
+    del.className='wc-del';
+    del.type='button';
+    del.textContent='×';
+    del.setAttribute('aria-label','Remove this wish');
+    del.addEventListener('click',()=>{
+      if(!confirm('Remove the wish from '+w.name+'?'))return;
+      wishes=wishes.filter(x=>x.id!==w.id);
+      persist();
+      renderWall();
+    });
+    card.appendChild(del);
+
+    wall.appendChild(card);
+  });
+
+  renderGoal();
+}
+
+/* ── Reveal mode ───────────────────────────────── */
+const revealEl=document.getElementById('reveal');
+const stageEl=document.getElementById('rv-stage');
+let rvList=[],rvIdx=-1;
+
+document.getElementById('btn-reveal').addEventListener('click',()=>{
+  rvList=wishes.slice().sort((a,b)=>a.ts-b.ts); // oldest first
+  if(!rvList.length){
+    alert('No wishes on the wall yet — invite your guests to pin some first! 🎈');
+    return;
+  }
+  rvIdx=-1;
+  revealEl.classList.add('open');
+  document.body.style.overflow='hidden';
+  rvIntro();
+});
+
+function rvIntro(){
+  const who=settings.honoree;
+  stageEl.innerHTML=`
+    <span class="rv-cake">🎂</span>
+    <p class="rv-kicker">A surprise for ${who?'':'you'}<span id="rv-who"></span></p>
+    <h2 class="rv-big">The Wishes Await…</h2>
+    <p class="rv-text">${rvList.length} ${rvList.length===1?'guest has':'guests have'} left birthday wishes on your wall.<br>Ready to unwrap them, one by one?</p>
+    <div class="rv-nav"><button class="btn btn-reveal" id="rv-start">✨ Begin the Reveal</button></div>
+    <p class="rv-hint">Use → / ← or tap the buttons · Esc to close</p>`;
+  if(who)document.getElementById('rv-who').textContent=who;
+  document.getElementById('rv-start').addEventListener('click',()=>rvShow(0));
+}
+
+function rvShow(i){
+  rvIdx=i;
+  const w=rvList[i];
+  const cat=CATS[w.cat];
+
+  const card=document.createElement('div');
+  card.className='rv-card cat-'+w.cat;
+  const em=document.createElement('span');
+  em.className='rc-emoji';
+  em.textContent=cat.emoji;
+  card.appendChild(em);
+  const badge=document.createElement('span');
+  badge.className='rc-badge';
+  badge.textContent=cat.label+' wish';
+  card.appendChild(badge);
+  if(w.photo&&typeof w.photo==='string'&&w.photo.startsWith('data:image/')){
+    const img=document.createElement('img');
+    img.className='rc-photo';
+    img.src=w.photo;
+    img.alt='Photo from '+w.name;
+    card.appendChild(img);
+  }
+  const msg=document.createElement('p');
+  msg.className='rc-msg';
+  msg.textContent='“'+w.msg+'”';
+  card.appendChild(msg);
+  const nm=document.createElement('p');
+  nm.className='rc-name';
+  nm.textContent=w.name;
+  card.appendChild(nm);
+  if(w.gift){
+    const g=document.createElement('p');
+    g.className='rc-gift';
+    g.textContent='🎁 Chipped in for your gift';
+    card.appendChild(g);
+  }
+
+  stageEl.innerHTML=`
+    <p class="rv-progress">Wish ${i+1} of ${rvList.length}</p>
+    <div id="rv-card-slot"></div>
+    <div class="rv-nav">
+      ${i>0?'<button class="btn btn-ghost" id="rv-prev">← Back</button>':''}
+      <button class="btn btn-reveal" id="rv-next">${i<rvList.length-1?'Next wish →':'🎉 Finish'}</button>
+    </div>`;
+  stageEl.querySelector('#rv-card-slot').appendChild(card);
+
+  const prev=document.getElementById('rv-prev');
+  if(prev)prev.addEventListener('click',()=>rvShow(i-1));
+  document.getElementById('rv-next').addEventListener('click',()=>{
+    if(i<rvList.length-1)rvShow(i+1);else rvFinale();
+  });
+  confetti(24);
+}
+
+function rvFinale(){
+  rvIdx=rvList.length;
+  const who=settings.honoree;
+  const giftSet=new Set(rvList.filter(w=>w.gift).map(w=>w.name));
+  const names=[...new Set(rvList.map(w=>w.name))];
+  stageEl.innerHTML=`
+    <span class="rv-cake">🎉</span>
+    <h2 class="rv-big">Happy Birthday${who?', ':''}<span id="rv-fin-who"></span>!</h2>
+    <p class="rv-text">All ${rvList.length} wishes revealed — with love from:</p>
+    <div class="rv-names">${names.map(n=>{
+      const s=document.createElement('span');
+      s.textContent=n+(giftSet.has(n)?' 🎁':'');
+      return s.outerHTML;
+    }).join('')}</div>
+    <div class="rv-nav">
+      <button class="btn btn-ghost" id="rv-replay">↺ Replay</button>
+      <button class="btn btn-reveal" id="rv-done">Back to the wall</button>
+    </div>`;
+  if(who)document.getElementById('rv-fin-who').textContent=who;
+  document.getElementById('rv-replay').addEventListener('click',()=>rvShow(0));
+  document.getElementById('rv-done').addEventListener('click',rvClose);
+  confetti(140);
+}
+
+function rvClose(){
+  revealEl.classList.remove('open');
+  document.body.style.overflow='';
+  stageEl.innerHTML='';
+}
+document.getElementById('rv-close').addEventListener('click',rvClose);
+
+document.addEventListener('keydown',e=>{
+  if(setupEl.classList.contains('open')&&e.key==='Escape'){setupEl.classList.remove('open');return}
+  if(!revealEl.classList.contains('open'))return;
+  if(e.key==='Escape'){rvClose();return}
+  if(rvIdx<0||rvIdx>=rvList.length)return;
+  if(e.key==='ArrowRight'||e.key===' '){
+    e.preventDefault();
+    if(rvIdx<rvList.length-1)rvShow(rvIdx+1);else rvFinale();
+  }else if(e.key==='ArrowLeft'&&rvIdx>0){
+    rvShow(rvIdx-1);
+  }
+});
+
+/* ── Init ──────────────────────────────────────── */
+applySettings();
+renderWall();
+</script>
+</body>
+</html>
