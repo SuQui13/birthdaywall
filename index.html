@@ -15,7 +15,7 @@ html{font-size:15px;-webkit-font-smoothing:antialiased}
 body{
   font-family:'Jost',sans-serif;
   font-weight:400;
-  background:#FFF8F0;
+  background:var(--page);
   color:#24152D;
   min-height:100vh;
   overflow-x:hidden;
@@ -31,6 +31,8 @@ body{
   --teal:#2E5F66;
   --teal-mist:#6E98A0;
   --cream:#FFF8F0;
+  --page:#FFF8F0;
+  --heading:#4A2F58;
   --border:#E8DDD0;
   /* party palette */
   --p-coral:#F2766B;
@@ -49,6 +51,44 @@ body{
   --inspiring:#6E98A0;
   --inspiring-bg:#E9F3F4;
   --inspiring-ink:#22525A;
+}
+
+/* ─── Themes (host-selectable) ─────────────────── */
+body[data-theme=pastel]{
+  --plum:#C06E93;
+  --plum-deep:#5C2E44;
+  --plum-pale:#FBE9F1;
+  --gold:#FFE3B3;
+  --gold-deep:#B07B3E;
+  --teal:#5E8D87;
+  --teal-mist:#96BCB6;
+  --cream:#FFF5FA;
+  --page:#FFF5FA;
+  --heading:#C06E93;
+  --border:#F0D9E4;
+}
+body[data-theme=midnight]{
+  --plum:#221E44;
+  --plum-deep:#12102A;
+  --plum-pale:#312B5E;
+  --gold:#F5C86E;
+  --gold-deep:#C79A45;
+  --page:#191635;
+  --heading:#F5C86E;
+  --border:#3A3564;
+}
+body[data-theme=sunshine]{
+  --plum:#D96B33;
+  --plum-deep:#6E2A0E;
+  --plum-pale:#FDEBD2;
+  --gold:#FFD98E;
+  --gold-deep:#A96A1F;
+  --teal:#31766A;
+  --teal-mist:#7FAF9F;
+  --cream:#FFFBEB;
+  --page:#FFFBEB;
+  --heading:#C25A28;
+  --border:#F2E2C4;
 }
 
 /* ─── Bunting (flag streamer across the top) ───── */
@@ -549,7 +589,7 @@ body{
   font-family:'Cormorant Garamond',serif;
   font-size:26px;
   font-weight:400;
-  color:var(--plum);
+  color:var(--heading);
 }
 .filters{display:flex;gap:6px;flex-wrap:wrap}
 .filter-btn{
@@ -895,6 +935,33 @@ body{
   gap:8px;
   margin-top:.4rem;
 }
+/* theme picker */
+.theme-chips{display:flex;gap:7px;flex-wrap:wrap}
+.theme-chip{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 12px;
+  border-radius:10px;
+  border:1.5px solid var(--border);
+  background:#fff;
+  cursor:pointer;
+  font-family:'Jost',sans-serif;
+  font-size:12.5px;
+  font-weight:500;
+  color:var(--plum-deep);
+  user-select:none;
+  transition:all .15s;
+}
+.theme-chip input{position:absolute;opacity:0;pointer-events:none}
+.theme-chip:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(74,47,88,.1)}
+.theme-chip.sel{border-color:var(--plum);box-shadow:0 0 0 2px var(--plum)}
+.tswatch{
+  width:18px;height:18px;
+  border-radius:50%;
+  border:1px solid rgba(36,21,45,.15);
+  flex-shrink:0;
+}
 /* share panel bits */
 .share-link-row{
   display:flex;
@@ -957,6 +1024,36 @@ body{
 }
 .page-footer span{color:var(--gold);opacity:.8}
 
+/* ─── Keepsake book (print / save as PDF) ──────── */
+#keepsake{display:none}
+@page{margin:18mm}
+@media print{
+  body.printing>:not(#keepsake){display:none!important}
+  body.printing{background:#fff!important}
+  body.printing #keepsake{display:block!important}
+}
+.kp-cover{text-align:center;padding-top:34vh;page-break-after:always}
+.kp-kicker{
+  font-family:'Cormorant Garamond',serif;
+  font-size:13px;letter-spacing:.25em;text-transform:uppercase;
+  color:#8F6F3E;margin-bottom:14px;
+}
+.kp-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:44px;font-weight:500;color:#24152D;line-height:1.1;
+}
+.kp-meta{font-size:13px;color:#555;margin-top:10px}
+.kp-heart{font-size:24px;color:#8F6F3E;margin-top:26px}
+.kp-wish{page-break-inside:avoid;border-bottom:1px solid #ddd;padding:16px 0}
+.kp-cat{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8F6F3E;margin-bottom:6px}
+.kp-msg{
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-style:italic;line-height:1.5;color:#111;margin-bottom:8px;
+}
+.kp-name{font-size:13px;font-weight:600;color:#2E5F66}
+.kp-photo{max-height:150px;max-width:220px;border-radius:6px;margin:8px 0;display:block}
+.kp-date{font-size:10.5px;color:#999;margin-top:4px}
+
 /* ─── Responsive ───────────────────────────────── */
 @media(max-width:640px){
   .wall-title{font-size:32px}
@@ -998,6 +1095,7 @@ body{
     <a class="btn btn-ghost" href="#add-wish" id="btn-add">✍️ Add your wish</a>
     <button class="btn btn-ghost" id="btn-setup">⚙️ Host setup</button>
     <button class="btn btn-ghost" id="btn-share" hidden>📣 Invite guests</button>
+    <button class="btn btn-ghost" id="btn-keepsake" hidden>📖 Keepsake</button>
   </div>
 </header>
 
@@ -1108,6 +1206,16 @@ body{
       <p class="gift-note">Sets the target for the progress bar. Guests only ever see a percentage — never the goal or any amounts.</p>
     </div>
 
+    <div class="f-row">
+      <span class="f-label">Theme</span>
+      <div class="theme-chips" id="theme-chips">
+        <label class="theme-chip" data-theme="classic"><input type="radio" name="theme" value="classic"><span class="tswatch" style="background:linear-gradient(135deg,#4A2F58 50%,#D8C29C 50%)"></span>Classic</label>
+        <label class="theme-chip" data-theme="pastel"><input type="radio" name="theme" value="pastel"><span class="tswatch" style="background:linear-gradient(135deg,#C06E93 50%,#FFE3B3 50%)"></span>Pastel</label>
+        <label class="theme-chip" data-theme="midnight"><input type="radio" name="theme" value="midnight"><span class="tswatch" style="background:linear-gradient(135deg,#191635 50%,#F5C86E 50%)"></span>Midnight</label>
+        <label class="theme-chip" data-theme="sunshine"><input type="radio" name="theme" value="sunshine"><span class="tswatch" style="background:linear-gradient(135deg,#D96B33 50%,#FFD98E 50%)"></span>Sunshine</label>
+      </div>
+    </div>
+
     <div class="setup-actions">
       <button type="submit" class="btn-submit">Save</button>
       <button type="button" class="btn-cancel" id="setup-cancel">Cancel</button>
@@ -1143,6 +1251,17 @@ body{
 <!-- ── Confetti layer ── -->
 <div id="confetti" aria-hidden="true"></div>
 
+<!-- ── Keepsake book (print only) ── -->
+<div id="keepsake" hidden>
+  <div class="kp-cover">
+    <p class="kp-kicker">Birthday Wishes Wall</p>
+    <h1 class="kp-title" id="kp-title"></h1>
+    <p class="kp-meta" id="kp-meta"></p>
+    <p class="kp-heart">❦</p>
+  </div>
+  <div id="kp-list"></div>
+</div>
+
 <!-- ── Demo badge ── -->
 <div class="demo-badge" id="demo-badge" hidden>🧪 Demo mode — wishes stay in this browser</div>
 
@@ -1169,6 +1288,7 @@ const CATS={
   inspiring:{label:'Inspiring',emoji:'✨'}
 };
 const PARTY=['#F2766B','#F5B841','#7BC4A4','#7FA8D9','#E58FB1','#A98BC4','#D8C29C'];
+const THEMES=['classic','pastel','midnight','sunshine'];
 
 /* ── Mode ──────────────────────────────────────── */
 const qp=new URLSearchParams(location.search);
@@ -1180,7 +1300,7 @@ let locked=false;
 
 /* ── State ─────────────────────────────────────── */
 let wishes=[];   // {id,name,msg,cat,photo,gift,ts[,amt in demo mode only]}
-let settings={honoree:'',payLink:'',goal:0,hasGoal:false};
+let settings={honoree:'',payLink:'',goal:0,hasGoal:false,theme:'classic'};
 let progress={pct:null,givers:0};
 let filter='all';
 let pendingPhoto=null;
@@ -1206,12 +1326,13 @@ function loadLocalSettings(){
       honoree:typeof s.honoree==='string'?s.honoree:'',
       payLink:typeof s.payLink==='string'?s.payLink:'',
       goal:typeof s.goal==='number'&&s.goal>0?s.goal:0,
-      hasGoal:false
+      hasGoal:false,
+      theme:THEMES.includes(s.theme)?s.theme:'classic'
     };
-  }catch(e){return{honoree:'',payLink:'',goal:0,hasGoal:false}}
+  }catch(e){return{honoree:'',payLink:'',goal:0,hasGoal:false,theme:'classic'}}
 }
 function persistLocalSettings(){
-  try{localStorage.setItem(SKEY,JSON.stringify({honoree:settings.honoree,payLink:settings.payLink,goal:settings.goal}))}catch(e){}
+  try{localStorage.setItem(SKEY,JSON.stringify({honoree:settings.honoree,payLink:settings.payLink,goal:settings.goal,theme:settings.theme}))}catch(e){}
 }
 
 /* ── Remote backend (Supabase PostgREST RPC) ───── */
@@ -1253,6 +1374,7 @@ async function loadRemote(){
   settings.honoree=ev.honoree||'';
   settings.payLink=ev.pay_link||'';
   settings.hasGoal=!!ev.has_goal;
+  settings.theme=THEMES.includes(ev.theme)?ev.theme:'classic';
   locked=!!ev.locked;
 
   if(HOST_TOKEN){
@@ -1314,10 +1436,13 @@ function applySettings(){
   document.getElementById('wall-sub').textContent=
     `Leave a wish for ${who||'the birthday star'} — funny, sweet, or inspiring. Add a photo if you like!`;
 
+  document.body.dataset.theme=settings.theme;
+
   // host-only controls
   document.getElementById('btn-setup').hidden=!isHost;
   document.getElementById('btn-reveal').hidden=!isHost;
   document.getElementById('btn-share').hidden=!(isHost&&REMOTE&&!locked);
+  document.getElementById('btn-keepsake').hidden=!isHost;
 
   // locked walls become read-only keepsakes
   document.getElementById('add-wish').hidden=locked;
@@ -1440,10 +1565,24 @@ function confetti(count){
 
 /* ── Host setup ────────────────────────────────── */
 const setupEl=document.getElementById('setup');
+const themeChips=document.getElementById('theme-chips');
+function syncThemeChips(){
+  themeChips.querySelectorAll('.theme-chip').forEach(ch=>{
+    const input=ch.querySelector('input');
+    input.checked=input.value===settings.theme;
+    ch.classList.toggle('sel',input.checked);
+  });
+}
+themeChips.addEventListener('change',()=>{
+  themeChips.querySelectorAll('.theme-chip').forEach(ch=>
+    ch.classList.toggle('sel',ch.querySelector('input').checked));
+});
+
 document.getElementById('btn-setup').addEventListener('click',()=>{
   document.getElementById('s-name').value=settings.honoree;
   document.getElementById('s-pay').value=settings.payLink;
   document.getElementById('s-goal').value=settings.goal||'';
+  syncThemeChips();
   document.getElementById('setup-hint').textContent=REMOTE
     ?'Personalise the wall for your celebration. Changes go live for every guest instantly.'
     :'Personalise the wall for your celebration. Settings are saved in this browser only — set the wall up on the device your guests will use.';
@@ -1457,12 +1596,14 @@ document.getElementById('setup-form').addEventListener('submit',async e=>{
   const payLink=document.getElementById('s-pay').value.trim();
   const g=parseFloat(document.getElementById('s-goal').value);
   const goal=isFinite(g)&&g>0?g:0;
+  const themeInput=themeChips.querySelector('input:checked');
+  const theme=themeInput&&THEMES.includes(themeInput.value)?themeInput.value:'classic';
 
   if(REMOTE){
     try{
       await rpc('update_settings',{
         p_slug:EVENT,p_token:HOST_TOKEN,
-        p_honoree:honoree,p_pay_link:payLink,p_goal:goal
+        p_honoree:honoree,p_pay_link:payLink,p_goal:goal,p_theme:theme
       });
     }catch(err){
       alert(friendlyError(err));
@@ -1472,11 +1613,13 @@ document.getElementById('setup-form').addEventListener('submit',async e=>{
     settings.payLink=payLink;
     settings.goal=goal;
     settings.hasGoal=goal>0;
+    settings.theme=theme;
     await refreshRemote();
   }else{
     settings.honoree=honoree;
     settings.payLink=payLink;
     settings.goal=goal;
+    settings.theme=theme;
     persistLocalSettings();
   }
   applySettings();
@@ -1518,6 +1661,62 @@ document.getElementById('share-copy').addEventListener('click',async()=>{
   const btn=document.getElementById('share-copy');
   btn.textContent='Copied!';
   setTimeout(()=>btn.textContent='Copy',1200);
+});
+
+/* ── Keepsake book (print / save as PDF) ───────── */
+document.getElementById('btn-keepsake').addEventListener('click',()=>{
+  if(!wishes.length){alert('No wishes to print yet — the keepsake fills up as guests pin wishes! 🎈');return}
+  const who=settings.honoree;
+  const fmt=t=>new Date(t).toLocaleDateString(undefined,{month:'long',day:'numeric',year:'numeric'});
+  document.getElementById('kp-title').textContent=who?`Wishes for ${who}`:'Birthday Wishes';
+  const guests=new Set(wishes.map(w=>w.name)).size;
+  const sorted=wishes.slice().sort((a,b)=>a.ts-b.ts);
+  const first=fmt(sorted[0].ts),last=fmt(sorted[sorted.length-1].ts);
+  document.getElementById('kp-meta').textContent=
+    `${wishes.length} wish${wishes.length===1?'':'es'} from ${guests} guest${guests===1?'':'s'}`
+    +` · ${first}${last!==first?' – '+last:''}`;
+
+  const list=document.getElementById('kp-list');
+  list.innerHTML='';
+  sorted.forEach(w=>{
+    const cat=CATS[w.cat];
+    const div=document.createElement('div');
+    div.className='kp-wish';
+    const c=document.createElement('p');
+    c.className='kp-cat';
+    c.textContent=cat.emoji+' '+cat.label+' wish';
+    div.appendChild(c);
+    if(w.photo&&typeof w.photo==='string'&&w.photo.startsWith('data:image/')){
+      const img=document.createElement('img');
+      img.className='kp-photo';
+      img.src=w.photo;
+      img.alt='Photo from '+w.name;
+      div.appendChild(img);
+    }
+    const m=document.createElement('p');
+    m.className='kp-msg';
+    m.textContent='“'+w.msg+'”';
+    div.appendChild(m);
+    const n=document.createElement('p');
+    n.className='kp-name';
+    n.textContent='— '+w.name+(w.gift?' 🎁':'');
+    div.appendChild(n);
+    const d=document.createElement('p');
+    d.className='kp-date';
+    d.textContent='Pinned '+fmt(w.ts);
+    div.appendChild(d);
+    list.appendChild(div);
+  });
+
+  document.getElementById('keepsake').hidden=false;
+  document.body.classList.add('printing');
+  const cleanup=()=>{
+    document.body.classList.remove('printing');
+    document.getElementById('keepsake').hidden=true;
+  };
+  window.addEventListener('afterprint',cleanup,{once:true});
+  window.print();
+  setTimeout(cleanup,1500); // fallback if afterprint never fires
 });
 
 /* ── Form: category chips ──────────────────────── */

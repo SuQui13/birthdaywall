@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Wishes Wall — a wall of love for their big day</title>
+<meta name="description" content="A shared birthday wall your guests fill with wishes, photos, and a group gift — revealed to the birthday person with confetti.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{font-size:15px;-webkit-font-smoothing:antialiased;scroll-behavior:smooth}
+body{
+  font-family:'Jost',sans-serif;
+  background:#FFF8F0;
+  color:#24152D;
+  overflow-x:hidden;
+}
+:root{
+  --plum:#4A2F58;
+  --plum-deep:#24152D;
+  --gold:#D8C29C;
+  --gold-deep:#8F6F3E;
+  --teal:#2E5F66;
+  --teal-mist:#6E98A0;
+  --cream:#FFF8F0;
+  --border:#E8DDD0;
+  --p-coral:#F2766B;
+  --p-sun:#F5B841;
+  --p-mint:#7BC4A4;
+  --p-sky:#7FA8D9;
+  --p-rose:#E58FB1;
+  --p-lilac:#A98BC4;
+}
+
+/* bunting */
+.bunting{
+  display:flex;justify-content:center;gap:10px;padding:0 6px;
+  border-top:3px solid var(--gold-deep);
+  background:var(--plum-deep);
+  animation:sway 6s ease-in-out infinite alternate;
+  transform-origin:top center;
+}
+.flag{
+  width:0;height:0;
+  border-left:15px solid transparent;
+  border-right:15px solid transparent;
+  border-top:24px solid var(--p-coral);
+  filter:drop-shadow(0 2px 2px rgba(36,21,45,.35));
+}
+@keyframes sway{from{transform:rotate(.4deg)}to{transform:rotate(-.4deg)}}
+
+/* hero */
+.hero{
+  position:relative;
+  background:var(--plum);
+  color:#fff;
+  text-align:center;
+  padding:4.5rem 1.5rem 5rem;
+  overflow:hidden;
+}
+.hero .balloon{
+  position:absolute;
+  width:54px;height:66px;
+  border-radius:50% 50% 50% 50%/44% 44% 56% 56%;
+  opacity:.35;
+  animation:heroFloat 9s ease-in-out infinite alternate;
+}
+@keyframes heroFloat{
+  from{transform:translateY(10px) rotate(-3deg)}
+  to{transform:translateY(-14px) rotate(3deg)}
+}
+.hero-kicker{
+  font-family:'Cormorant Garamond',serif;
+  font-size:12px;letter-spacing:.25em;text-transform:uppercase;
+  color:var(--gold);margin-bottom:1rem;
+}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:400;
+  font-size:clamp(34px,6vw,56px);
+  line-height:1.08;
+  max-width:16em;
+  margin:0 auto .9rem;
+}
+.hero p{
+  font-weight:300;
+  font-size:15.5px;
+  color:rgba(255,255,255,.78);
+  max-width:36em;
+  margin:0 auto 2rem;
+  line-height:1.65;
+}
+.cta-row{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+.btn{
+  font-family:'Jost',sans-serif;
+  font-size:14px;font-weight:500;letter-spacing:.05em;
+  border-radius:26px;padding:13px 28px;
+  border:1px solid transparent;
+  cursor:pointer;text-decoration:none;display:inline-block;
+  transition:transform .15s,box-shadow .15s,background .15s;
+}
+.btn:hover{transform:translateY(-2px)}
+.btn-gold{
+  background:linear-gradient(135deg,var(--gold),#E9D6AE);
+  color:var(--plum-deep);
+  box-shadow:0 4px 18px rgba(216,194,156,.45);
+}
+.btn-ghost{
+  background:rgba(255,255,255,.1);
+  border-color:rgba(255,255,255,.35);
+  color:#fff;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.2)}
+.hero-note{font-size:11.5px;color:rgba(255,255,255,.45);margin-top:1.1rem;letter-spacing:.04em}
+
+/* sections */
+.section{max-width:1020px;margin:0 auto;padding:3.5rem 1.5rem}
+.sec-title{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:400;
+  font-size:32px;
+  color:var(--plum);
+  text-align:center;
+  margin-bottom:.5rem;
+}
+.sec-sub{
+  text-align:center;
+  color:var(--teal-mist);
+  font-size:13.5px;
+  margin-bottom:2.2rem;
+}
+
+/* features */
+.features{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  gap:16px;
+}
+.feature{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:1.4rem 1.4rem 1.2rem;
+  box-shadow:0 4px 18px rgba(74,47,88,.06);
+  transition:transform .15s,box-shadow .15s;
+}
+.feature:hover{transform:translateY(-3px);box-shadow:0 8px 26px rgba(74,47,88,.12)}
+.feature .fe{font-size:30px;display:block;margin-bottom:.6rem}
+.feature h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;font-weight:600;color:var(--plum);
+  margin-bottom:.35rem;
+}
+.feature p{font-size:13px;color:var(--teal);line-height:1.6;font-weight:300}
+
+/* how it works */
+.steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:16px;
+  counter-reset:step;
+}
+.step{
+  background:#fff;
+  border:1.5px solid var(--gold);
+  border-radius:14px;
+  padding:1.5rem 1.4rem;
+  text-align:center;
+  position:relative;
+}
+.step::before{
+  counter-increment:step;
+  content:counter(step);
+  display:inline-flex;
+  align-items:center;justify-content:center;
+  width:34px;height:34px;
+  border-radius:50%;
+  background:var(--plum);
+  color:var(--gold);
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;font-weight:600;
+  margin-bottom:.7rem;
+}
+.step h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;font-weight:600;color:var(--plum);
+  margin-bottom:.4rem;
+}
+.step p{font-size:13px;color:var(--teal);line-height:1.6;font-weight:300}
+
+/* pricing */
+.price-card{
+  max-width:420px;
+  margin:0 auto;
+  background:var(--plum);
+  color:#fff;
+  border-radius:18px;
+  text-align:center;
+  padding:2.4rem 2rem 2.2rem;
+  box-shadow:0 16px 44px rgba(74,47,88,.35);
+}
+.price-amount{
+  font-family:'Cormorant Garamond',serif;
+  font-size:52px;
+  color:var(--gold);
+  line-height:1;
+  margin-bottom:.3rem;
+}
+.price-per{font-size:12.5px;color:rgba(255,255,255,.6);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.4rem}
+.price-list{list-style:none;margin-bottom:1.8rem}
+.price-list li{
+  font-size:13.5px;font-weight:300;
+  color:rgba(255,255,255,.85);
+  padding:5px 0;
+}
+.price-list li::before{content:'✓ ';color:var(--gold);font-weight:600}
+
+/* FAQ */
+.faq{max-width:680px;margin:0 auto}
+.faq details{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin-bottom:10px;
+  padding:0;
+  overflow:hidden;
+}
+.faq summary{
+  cursor:pointer;
+  padding:14px 18px;
+  font-weight:500;
+  font-size:14px;
+  color:var(--plum);
+  list-style:none;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.faq summary::after{content:'+';font-size:18px;color:var(--gold-deep)}
+.faq details[open] summary::after{content:'–'}
+.faq details p{
+  padding:0 18px 15px;
+  font-size:13.5px;
+  color:var(--teal);
+  line-height:1.65;
+  font-weight:300;
+}
+
+/* footer */
+.page-footer{
+  background:var(--plum);
+  color:rgba(255,255,255,.5);
+  text-align:center;
+  padding:1.4rem 2rem;
+  font-size:11px;
+  letter-spacing:.06em;
+  font-weight:300;
+}
+.page-footer span{color:var(--gold);opacity:.85}
+</style>
+</head>
+<body>
+
+<div class="bunting" id="bunting" aria-hidden="true"></div>
+
+<header class="hero">
+  <span class="balloon" style="left:6%;top:22%;background:var(--p-coral)" aria-hidden="true"></span>
+  <span class="balloon" style="left:14%;top:60%;background:var(--p-mint);animation-delay:-3s" aria-hidden="true"></span>
+  <span class="balloon" style="right:8%;top:18%;background:var(--p-sky);animation-delay:-5s" aria-hidden="true"></span>
+  <span class="balloon" style="right:15%;top:62%;background:var(--p-rose);animation-delay:-1.5s" aria-hidden="true"></span>
+
+  <p class="hero-kicker">Birthday Wishes Wall</p>
+  <h1>Give them a wall of birthday love&nbsp;🎈</h1>
+  <p>One link for all your guests. They pin wishes, photos, and chip in for the
+     group gift — then, on the big day, the birthday person unwraps every wish
+     one by one in a shower of confetti.</p>
+  <div class="cta-row">
+    <a class="btn btn-gold" id="btn-buy" href="#pricing">💝 Get your wall</a>
+    <a class="btn btn-ghost" href="index.html">🎈 Try the live demo</a>
+  </div>
+  <p class="hero-note">No app to install · works on every phone · ready in two minutes</p>
+</header>
+
+<section class="section">
+  <h2 class="sec-title">Everything a celebration needs</h2>
+  <p class="sec-sub">Festive by default — balloons, bunting, streamers and confetti included.</p>
+  <div class="features">
+    <div class="feature">
+      <span class="fe">💌</span>
+      <h3>Wishes from everyone</h3>
+      <p>Guests add their name and a message — funny 😂, sweet 💖, or inspiring ✨ — from their own phones, all onto one shared wall.</p>
+    </div>
+    <div class="feature">
+      <span class="fe">📷</span>
+      <h3>Photos &amp; memories</h3>
+      <p>Every wish can carry a photo: an old memory, a selfie, the dog in a party hat. The wall becomes a scrapbook as the day approaches.</p>
+    </div>
+    <div class="feature">
+      <span class="fe">💰</span>
+      <h3>Group gift, zero awkwardness</h3>
+      <p>Add your PayPal, Bizum or any payment link. Guests chip in directly — the wall never touches the money.</p>
+    </div>
+    <div class="feature">
+      <span class="fe">🤫</span>
+      <h3>Progress without numbers</h3>
+      <p>A festive progress bar shows how close the gift goal is — as a percentage only. Nobody ever sees who gave how much, just a little 🎁 beside each contributor's wish.</p>
+    </div>
+    <div class="feature">
+      <span class="fe">🎁</span>
+      <h3>The big reveal</h3>
+      <p>On the birthday, the wishes unwrap one by one, full-screen with confetti — ending in a "Happy Birthday!" finale crediting every guest.</p>
+    </div>
+    <div class="feature">
+      <span class="fe">📖</span>
+      <h3>A keepsake forever</h3>
+      <p>Afterwards, print the whole wall as a beautiful keepsake book (or save it as a PDF) — cover page, every wish, every photo.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:1rem">
+  <h2 class="sec-title">How it works</h2>
+  <p class="sec-sub">You'll be ready before the cake is out of the oven.</p>
+  <div class="steps">
+    <div class="step">
+      <h3>Get your wall</h3>
+      <p>One purchase, one celebration. You receive two links by email: a private <em>host link</em> for you, and a <em>guest link</em> to share.</p>
+    </div>
+    <div class="step">
+      <h3>Make it theirs</h3>
+      <p>Open your host link, add the birthday person's name, pick a theme, and (optionally) set up the group gift. Then share the guest link — or print the built-in QR code.</p>
+    </div>
+    <div class="step">
+      <h3>Reveal &amp; keep</h3>
+      <p>On the day, run the confetti reveal together. The wall stays open 60 days, then lives on as a read-only keepsake you can print.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="pricing" style="padding-top:1rem">
+  <h2 class="sec-title">Simple pricing</h2>
+  <p class="sec-sub">Pay once per celebration — no subscription, no account needed.</p>
+  <div class="price-card">
+    <div class="price-amount" id="price-amount">€12</div>
+    <div class="price-per">per event</div>
+    <ul class="price-list">
+      <li>Up to 150 wishes &amp; 75 photos</li>
+      <li>Custom name &amp; four festive themes</li>
+      <li>Group gift kitty with secret-amount progress</li>
+      <li>Confetti reveal for the birthday person</li>
+      <li>Printable QR invitation &amp; keepsake book</li>
+      <li>Wall stays open for 60 days</li>
+    </ul>
+    <a class="btn btn-gold" id="btn-buy-2" href="#">💝 Get your wall now</a>
+  </div>
+</section>
+
+<section class="section" style="padding-top:1rem">
+  <h2 class="sec-title">Questions, answered</h2>
+  <p class="sec-sub"></p>
+  <div class="faq">
+    <details>
+      <summary>Do my guests need to install anything?</summary>
+      <p>No — the wall is a web page. Guests open the link (or scan the QR code) on any phone, tablet or computer and pin their wish right there.</p>
+    </details>
+    <details>
+      <summary>How does the money for the group gift work?</summary>
+      <p>You add your own payment link (PayPal.me, Bizum, Revolut…) and guests pay each other's way directly through it. The wall never holds or processes money — it just shows a percentage-only progress bar and marks contributors' wishes with a 🎁.</p>
+    </details>
+    <details>
+      <summary>Can anyone see how much someone gave?</summary>
+      <p>No. Amounts are optional, and if entered they're used only to move the progress bar. They are never displayed anywhere — not to guests, not to the birthday person.</p>
+    </details>
+    <details>
+      <summary>How long does the wall stay up?</summary>
+      <p>The wall accepts wishes for 60 days (or until shortly after your event date). After that it becomes a read-only keepsake — and you can print it as a book or save it as a PDF anytime.</p>
+    </details>
+    <details>
+      <summary>Is the wall private?</summary>
+      <p>Each wall has its own unguessable link that only the people you share it with know. Anyone with the guest link can read and add wishes — so share it with the guest list, not the whole internet.</p>
+    </details>
+  </div>
+</section>
+
+<footer class="page-footer">
+  <span>Birthday Wishes Wall</span> &nbsp;·&nbsp; wishes, photos &amp; a group gift — all in one festive place
+</footer>
+
+<script>
+'use strict';
+
+/* ══ Sales config ═══════════════════════════════
+   BUY_URL: your Lemon Squeezy (or other) checkout link.
+   PRICE:   display price on the pricing card.          */
+const BUY_URL='';
+const PRICE='€12';
+
+document.getElementById('price-amount').textContent=PRICE;
+const buyTop=document.getElementById('btn-buy');
+const buyCard=document.getElementById('btn-buy-2');
+if(BUY_URL){
+  buyCard.href=BUY_URL;
+  buyTop.href=BUY_URL;
+}else{
+  buyCard.addEventListener('click',e=>{
+    e.preventDefault();
+    alert('Checkout is not connected yet — set BUY_URL in landing.html to your payment link.');
+  });
+}
+
+/* bunting flags */
+const PARTY=['#F2766B','#F5B841','#7BC4A4','#7FA8D9','#E58FB1','#A98BC4','#D8C29C'];
+const bunting=document.getElementById('bunting');
+const n=Math.max(12,Math.ceil(window.innerWidth/46));
+let html='';
+for(let i=0;i<n;i++){
+  html+=`<span class="flag" style="border-top-color:${PARTY[i%PARTY.length]}"></span>`;
+}
+bunting.innerHTML=html;
+</script>
+</body>
+</html>

@@ -11,6 +11,12 @@ wall with its own link, its own birthday person, and its own group-gift kitty.
   the browser before upload).
 - **Custom birthday person** — the host sets the name; the title, subtitle and
   reveal all address them by name.
+- **Four festive themes** — Classic (plum & gold), Pastel, Midnight (night sky
+  with glowing cards), and Sunshine, picked by the host and applied for every
+  guest instantly.
+- **Keepsake book** — the host can print the whole wall (or save it as a PDF)
+  as a clean book: cover page with the name and dates, then every wish and
+  photo in order.
 - **Group gift kitty** — the host adds a payment link (PayPal.me, Bizum,
   Verse, …) and a private goal. Guests tap *Chip in*, which opens the link —
   money flows directly through the payment provider, never through this app.
@@ -105,13 +111,19 @@ returns 500 on any failure, so transient hiccups self-heal.
 
 | | |
 |---|---|
+| `landing.html` | Buyer-facing sales page — features, pricing, FAQ, demo link |
 | `index.html` | The wall — guest view, host view, and offline demo mode |
 | `admin.html` | Seller console — create/list events, buyer links, QR codes |
 | `qr.js` | QR encoder ([qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator), MIT) |
 | `supabase/schema.sql` | Tables, security model, and all API functions |
 | `supabase/functions/checkout-webhook/` | Optional Lemon Squeezy → wall automation |
 
+Point buyers at `landing.html`; its "Try the live demo" button opens the wall
+in demo mode. Set `BUY_URL` (your checkout link) and `PRICE` at the bottom of
+`landing.html` before going live.
+
 ## Roadmap
 
-- **Phase 3 — polish**: theme picker, keepsake PDF export of all wishes after
-  the event, video wishes, buyer-facing landing page with the demo wall.
+- Video wishes (needs Supabase Storage for uploads)
+- Multi-language walls
+- Per-theme printable invitation templates

@@ -21,9 +21,14 @@ create table if not exists events (
   event_date date,
   pay_link   text not null default '' check (char_length(pay_link) <= 200),
   goal       numeric not null default 0 check (goal >= 0),
+  theme      text not null default 'classic'
+             check (theme in ('classic','pastel','midnight','sunshine')),
   locks_at   timestamptz,
   created_at timestamptz not null default now()
 );
+
+-- migration for walls created with the phase-1 schema
+alter table events add column if not exists theme text not null default 'classic';
 
 create table if not exists wishes (
   id         uuid primary key default gen_random_uuid(),
@@ -50,14 +55,17 @@ revoke all on table wishes from anon, authenticated;
 
 -- Event info safe to show any guest. Never exposes goal, amounts,
 -- or the host token — only whether a goal exists.
+drop function if exists public_event(text);
 create or replace function public_event(p_slug text)
-returns table(honoree text, pay_link text, has_goal boolean, locked boolean, event_date date)
+returns table(honoree text, pay_link text, has_goal boolean, locked boolean,
+              event_date date, theme text)
 language sql security definer set search_path = public as $$
   select e.honoree,
          e.pay_link,
          e.goal > 0,
          (e.locks_at is not null and now() > e.locks_at),
-         e.event_date
+         e.event_date,
+         e.theme
   from events e
   where e.slug = p_slug;
 $$;
@@ -150,8 +158,10 @@ language sql security definer set search_path = public as $$
   where e.slug = p_slug and e.host_token::text = p_token;
 $$;
 
+drop function if exists update_settings(text,text,text,text,numeric);
 create or replace function update_settings(
-  p_slug text, p_token text, p_honoree text, p_pay_link text, p_goal numeric)
+  p_slug text, p_token text, p_honoree text, p_pay_link text, p_goal numeric,
+  p_theme text default 'classic')
 returns void
 language plpgsql security definer set search_path = public as $$
 declare
@@ -161,6 +171,10 @@ begin
   from events where slug = p_slug and host_token::text = p_token;
   if not found then
     raise exception 'not authorised';
+  end if;
+
+  if p_theme not in ('classic','pastel','midnight','sunshine') then
+    raise exception 'unknown theme';
   end if;
 
   -- One-event enforcement: once wishes exist, the honoree name is
@@ -174,7 +188,8 @@ begin
   update events
   set honoree  = trim(coalesce(p_honoree, '')),
       pay_link = trim(coalesce(p_pay_link, '')),
-      goal     = greatest(coalesce(p_goal, 0), 0)
+      goal     = greatest(coalesce(p_goal, 0), 0),
+      theme    = p_theme
   where id = v_event.id;
 end $$;
 
@@ -264,7 +279,7 @@ grant execute on function get_progress(text)                                    
 grant execute on function add_wish(text,text,text,text,text,boolean,numeric)    to anon, authenticated;
 grant execute on function verify_host(text,text)                                to anon, authenticated;
 grant execute on function get_host_settings(text,text)                          to anon, authenticated;
-grant execute on function update_settings(text,text,text,text,numeric)          to anon, authenticated;
+grant execute on function update_settings(text,text,text,text,numeric,text)     to anon, authenticated;
 grant execute on function delete_wish(text,text,uuid)                           to anon, authenticated;
 grant execute on function create_event(text,text,text,date,int)                 to anon, authenticated;
 grant execute on function list_events(text)                                     to anon, authenticated;
