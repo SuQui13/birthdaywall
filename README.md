@@ -22,10 +22,17 @@ wall with its own link, its own birthday person, and its own group-gift kitty.
 - **Reveal mode** — a full-screen experience for the birthday person: wishes
   unwrap one by one with confetti, ending in a "Happy Birthday, {name}!" finale.
 - **Host vs guest links** — the host link (secret token) unlocks setup, the
-  reveal, and wish moderation; the guest link can only add wishes.
+  reveal, wish moderation, and an **📣 Invite guests** panel with a copyable
+  guest link and a printable QR code; the guest link can only add wishes.
 - **One event, enforced** — each wall has a unique slug, auto-locks after the
   event date (becoming a read-only keepsake), caps at 150 wishes / 75 photos,
   and the birthday person's name is fixed once wishes start arriving.
+- **Seller console** — `admin.html` (guarded by an admin key) creates events,
+  builds the buyer's links + QR, and lists every wall with wish counts and
+  lock status. No SQL needed per sale.
+- **Automated checkout** — an optional Supabase Edge Function turns a
+  Lemon Squeezy purchase into a wall automatically and emails the buyer
+  their links.
 
 ## Two modes
 
@@ -48,28 +55,39 @@ wall with its own link, its own birthday person, and its own group-gift kitty.
    ```
    (The anon key is designed to be public — the SQL schema locks down what it
    can do.)
-4. Host `index.html` anywhere static — GitHub Pages (Settings → Pages → deploy
-   from `main`) works free.
+4. Paste the same two constants into `admin.html`.
+5. Set your seller **admin key** (a long random secret only you know) — in the
+   SQL editor run:
+   ```sql
+   insert into seller_config (admin_key_hash)
+   values (encode(digest('CHOOSE-A-LONG-RANDOM-SECRET', 'sha256'), 'hex'))
+   on conflict (id) do update set admin_key_hash = excluded.admin_key_hash;
+   ```
+6. Host the files anywhere static — GitHub Pages (Settings → Pages → deploy
+   from `main`) works free. `index.html`, `admin.html`, and `qr.js` live side
+   by side.
 
-## Creating an event (one per sale, ~2 minutes)
+## Selling manually (one sale ≈ one minute)
 
-In the Supabase **SQL Editor**, run:
+Open `admin.html`, unlock with your admin key, and fill in the *Create an
+event* form (slug, optional name, event date). The console shows the buyer's
+**guest link**, **host link**, and a QR code of the guest link — copy them into
+your sale confirmation email. The buyer does the rest themselves via
+**⚙️ Host setup** on their host link.
 
-```sql
-insert into events (slug, honoree, event_date, locks_at)
-values ('maya-30', 'Maya', '2026-08-15',
-        timestamptz '2026-08-15' + interval '7 days')
-returning slug, host_token;
-```
+The console also lists every wall you've sold with wish counts and lock
+status, and can re-surface any wall's links if a buyer loses them.
 
-Then email the buyer their two links:
+## Selling automatically (optional)
 
-- **Guest link** (share with everyone): `https://YOUR-PAGE/?e=maya-30`
-- **Host link** (keep private): `https://YOUR-PAGE/?e=maya-30&host=<host_token>`
-
-The host opens their link, taps **⚙️ Host setup**, and customizes the name,
-gift-kitty link, and goal themselves — you don't have to do anything else.
-`locks_at` is when the wall closes to new wishes and becomes a keepsake.
+`supabase/functions/checkout-webhook/index.ts` turns a
+[Lemon Squeezy](https://lemonsqueezy.com) purchase into a wall with zero
+manual work: it verifies the webhook signature, creates the event (locked
+60 days out), and emails the buyer both links via
+[Resend](https://resend.com). Setup instructions are in the file header —
+deploy with `supabase functions deploy checkout-webhook --no-verify-jwt` and
+set the four secrets. Lemon Squeezy retries failed webhooks, and the function
+returns 500 on any failure, so transient hiccups self-heal.
 
 ## Privacy model
 
@@ -83,10 +101,17 @@ gift-kitty link, and goal themselves — you don't have to do anything else.
 - Wishes are visible to anyone who has the guest link — say so on the wall's
   invite so guests know it's a shared space.
 
+## Files
+
+| | |
+|---|---|
+| `index.html` | The wall — guest view, host view, and offline demo mode |
+| `admin.html` | Seller console — create/list events, buyer links, QR codes |
+| `qr.js` | QR encoder ([qrcode-generator](https://github.com/kazuhikoarase/qrcode-generator), MIT) |
+| `supabase/schema.sql` | Tables, security model, and all API functions |
+| `supabase/functions/checkout-webhook/` | Optional Lemon Squeezy → wall automation |
+
 ## Roadmap
 
-- **Phase 2 — self-serve sales**: a checkout webhook (Lemon Squeezy / Paddle /
-  Stripe) that runs the event insert automatically and emails the buyer their
-  links, plus a QR code per event for invitations.
 - **Phase 3 — polish**: theme picker, keepsake PDF export of all wishes after
-  the event, video wishes.
+  the event, video wishes, buyer-facing landing page with the demo wall.

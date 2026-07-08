@@ -856,8 +856,8 @@ body{
   color:rgba(255,255,255,.85);
 }
 
-/* ─── Host setup overlay ───────────────────────── */
-#setup{
+/* ─── Host setup & share overlays ──────────────── */
+#setup,#share{
   position:fixed;inset:0;
   z-index:1150;
   display:none;
@@ -866,7 +866,7 @@ body{
   background:rgba(36,21,45,.55);
   padding:1.5rem;
 }
-#setup.open{display:flex}
+#setup.open,#share.open{display:flex}
 .setup-card{
   background:#fff;
   border-radius:14px;
@@ -895,6 +895,40 @@ body{
   gap:8px;
   margin-top:.4rem;
 }
+/* share panel bits */
+.share-link-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-bottom:.8rem;
+}
+.share-link-val{
+  flex:1;
+  min-width:180px;
+  font-size:12px;
+  font-family:ui-monospace,monospace;
+  background:var(--cream);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:8px 10px;
+  overflow-wrap:anywhere;
+}
+.btn-copy{
+  flex:0 0 auto;
+  background:var(--teal);
+  color:#fff;
+  border:none;
+  border-radius:18px;
+  padding:8px 16px;
+  font-family:'Jost',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+.share-qr{text-align:center;margin-top:.4rem}
+.share-qr img{border:8px solid #fff;box-shadow:0 2px 12px rgba(74,47,88,.15);border-radius:6px}
+.share-qr p{font-size:11px;color:var(--teal-mist);margin-top:6px;font-style:italic}
 .setup-actions .btn-submit{flex:1}
 .btn-cancel{
   flex:0 0 auto;
@@ -963,6 +997,7 @@ body{
     <button class="btn btn-reveal" id="btn-reveal">🎁 Reveal for the Birthday Person</button>
     <a class="btn btn-ghost" href="#add-wish" id="btn-add">✍️ Add your wish</a>
     <button class="btn btn-ghost" id="btn-setup">⚙️ Host setup</button>
+    <button class="btn btn-ghost" id="btn-share" hidden>📣 Invite guests</button>
   </div>
 </header>
 
@@ -1080,6 +1115,25 @@ body{
   </form>
 </div>
 
+<!-- ── Invite guests overlay ── -->
+<div id="share" role="dialog" aria-modal="true" aria-label="Invite guests">
+  <div class="setup-card">
+    <h2 class="setup-title">📣 Invite guests</h2>
+    <p class="setup-hint">Share this link (or the QR code) with everyone — anyone with it can pin a wish. Keep your own host link private.</p>
+    <div class="share-link-row">
+      <span class="share-link-val" id="share-link"></span>
+      <button type="button" class="btn-copy" id="share-copy">Copy</button>
+    </div>
+    <div class="share-qr">
+      <div id="share-qr"></div>
+      <p>Print the QR for the party table or the invitation. 🎉</p>
+    </div>
+    <div class="setup-actions">
+      <button type="button" class="btn-cancel" id="share-close" style="flex:1">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Reveal overlay ── -->
 <div id="reveal" role="dialog" aria-modal="true" aria-label="Birthday wish reveal">
   <button class="rv-close" id="rv-close" aria-label="Close reveal">×</button>
@@ -1096,6 +1150,7 @@ body{
   <span>Birthday Wishes Wall</span> &nbsp;·&nbsp; wishes, photos &amp; a group gift — all in one festive place
 </footer>
 
+<script src="qr.js"></script>
 <script>
 'use strict';
 
@@ -1262,6 +1317,7 @@ function applySettings(){
   // host-only controls
   document.getElementById('btn-setup').hidden=!isHost;
   document.getElementById('btn-reveal').hidden=!isHost;
+  document.getElementById('btn-share').hidden=!(isHost&&REMOTE&&!locked);
 
   // locked walls become read-only keepsakes
   document.getElementById('add-wish').hidden=locked;
@@ -1426,6 +1482,42 @@ document.getElementById('setup-form').addEventListener('submit',async e=>{
   applySettings();
   setupEl.classList.remove('open');
   confetti(40);
+});
+
+/* ── Invite guests (share link + QR) ───────────── */
+const shareEl=document.getElementById('share');
+function guestLink(){
+  return location.origin+location.pathname+'?e='+encodeURIComponent(EVENT);
+}
+document.getElementById('btn-share').addEventListener('click',()=>{
+  const link=guestLink();
+  document.getElementById('share-link').textContent=link;
+  const qrBox=document.getElementById('share-qr');
+  qrBox.innerHTML='';
+  if(typeof qrcode==='function'){
+    try{
+      const qr=qrcode(0,'M');
+      qr.addData(link);
+      qr.make();
+      qrBox.innerHTML=qr.createImgTag(5,8);
+      qrBox.querySelector('img').alt='QR code for '+link;
+    }catch(e){/* link too long for QR — the copyable link still works */}
+  }
+  shareEl.classList.add('open');
+});
+document.getElementById('share-close').addEventListener('click',()=>shareEl.classList.remove('open'));
+shareEl.addEventListener('click',e=>{if(e.target===shareEl)shareEl.classList.remove('open')});
+document.getElementById('share-copy').addEventListener('click',async()=>{
+  const text=document.getElementById('share-link').textContent;
+  try{await navigator.clipboard.writeText(text)}
+  catch(e){
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');ta.remove();
+  }
+  const btn=document.getElementById('share-copy');
+  btn.textContent='Copied!';
+  setTimeout(()=>btn.textContent='Copy',1200);
 });
 
 /* ── Form: category chips ──────────────────────── */
@@ -1769,6 +1861,7 @@ document.getElementById('rv-close').addEventListener('click',rvClose);
 
 document.addEventListener('keydown',e=>{
   if(setupEl.classList.contains('open')&&e.key==='Escape'){setupEl.classList.remove('open');return}
+  if(shareEl.classList.contains('open')&&e.key==='Escape'){shareEl.classList.remove('open');return}
   if(!revealEl.classList.contains('open'))return;
   if(e.key==='Escape'){rvClose();return}
   if(rvIdx<0||rvIdx>=rvList.length)return;

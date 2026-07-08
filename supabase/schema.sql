@@ -192,6 +192,70 @@ begin
   delete from wishes where id = p_wish and event_id = v_event_id;
 end $$;
 
+-- ── Seller console ───────────────────────────────────────────
+-- The seller sets one admin key (see the README); admin.html uses
+-- it to create and list events without touching SQL. Only a hash
+-- of the key is stored.
+
+create table if not exists seller_config (
+  id boolean primary key default true check (id),
+  admin_key_hash text not null
+);
+alter table seller_config enable row level security;
+revoke all on table seller_config from anon, authenticated;
+
+-- Internal helper. Postgres grants EXECUTE on new functions to
+-- PUBLIC by default, so revoke it explicitly — otherwise the anon
+-- key could probe admin keys directly.
+create or replace function check_admin(p_key text)
+returns boolean
+language sql security definer set search_path = public as $$
+  select exists(
+    select 1 from seller_config
+    where admin_key_hash = encode(digest(coalesce(p_key,''), 'sha256'), 'hex')
+  );
+$$;
+revoke execute on function check_admin(text) from public, anon, authenticated;
+
+create or replace function create_event(
+  p_admin_key text, p_slug text, p_honoree text, p_event_date date, p_lock_days int)
+returns table(slug text, host_token uuid)
+language plpgsql security definer set search_path = public as $$
+begin
+  if not check_admin(p_admin_key) then
+    raise exception 'not authorised';
+  end if;
+  if exists(select 1 from events e where e.slug = p_slug) then
+    raise exception 'slug already taken';
+  end if;
+  return query
+  insert into events(slug, honoree, event_date, locks_at)
+  values (p_slug, trim(coalesce(p_honoree, '')), p_event_date,
+          case when p_event_date is not null
+               then p_event_date::timestamptz
+                    + make_interval(days => greatest(coalesce(p_lock_days, 7), 0))
+               else now() + interval '60 days' end)
+  returning events.slug, events.host_token;
+end $$;
+
+create or replace function list_events(p_admin_key text)
+returns table(slug text, honoree text, event_date date, locks_at timestamptz,
+              created_at timestamptz, host_token uuid,
+              wish_count bigint, giver_count bigint)
+language plpgsql security definer set search_path = public as $$
+begin
+  if not check_admin(p_admin_key) then
+    raise exception 'not authorised';
+  end if;
+  return query
+  select e.slug, e.honoree, e.event_date, e.locks_at, e.created_at, e.host_token,
+         count(w.id), count(w.id) filter (where w.gift)
+  from events e
+  left join wishes w on w.event_id = e.id
+  group by e.id
+  order by e.created_at desc;
+end $$;
+
 -- ── Grants ───────────────────────────────────────────────────
 
 grant execute on function public_event(text)                                    to anon, authenticated;
@@ -202,16 +266,26 @@ grant execute on function verify_host(text,text)                                
 grant execute on function get_host_settings(text,text)                          to anon, authenticated;
 grant execute on function update_settings(text,text,text,text,numeric)          to anon, authenticated;
 grant execute on function delete_wish(text,text,uuid)                           to anon, authenticated;
+grant execute on function create_event(text,text,text,date,int)                 to anon, authenticated;
+grant execute on function list_events(text)                                     to anon, authenticated;
 
 -- ─────────────────────────────────────────────────────────────
--- Creating an event (one per sale) — run in the SQL editor:
+-- One-time: set your admin key for the seller console (admin.html).
+-- Pick a long random secret and keep it private:
+--
+--   insert into seller_config (admin_key_hash)
+--   values (encode(digest('CHOOSE-A-LONG-RANDOM-SECRET', 'sha256'), 'hex'))
+--   on conflict (id) do update set admin_key_hash = excluded.admin_key_hash;
+--
+-- Events are normally created in admin.html, but the SQL editor
+-- works too:
 --
 --   insert into events (slug, honoree, event_date, locks_at)
 --   values ('maya-30', 'Maya', '2026-08-15',
 --           timestamptz '2026-08-15' + interval '7 days')
 --   returning slug, host_token;
 --
--- Then send the buyer:
+-- Links:
 --   Guest link: https://YOUR-PAGE/?e=maya-30
 --   Host link:  https://YOUR-PAGE/?e=maya-30&host=<host_token>
 -- ─────────────────────────────────────────────────────────────

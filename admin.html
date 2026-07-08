@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seller Console · Birthday Wishes Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{
+  font-family:'Jost',sans-serif;
+  background:#FFF8F0;
+  color:#24152D;
+  min-height:100vh;
+}
+:root{
+  --plum:#4A2F58;
+  --plum-deep:#24152D;
+  --gold:#D8C29C;
+  --gold-deep:#8F6F3E;
+  --teal:#2E5F66;
+  --teal-mist:#6E98A0;
+  --cream:#FFF8F0;
+  --border:#E8DDD0;
+}
+.page-header{
+  background:var(--plum);
+  color:#fff;
+  padding:1.6rem 2rem;
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:.5rem;
+}
+.hdr-title{
+  font-family:'Cormorant Garamond',serif;
+  font-weight:400;
+  font-size:26px;
+}
+.hdr-sub{font-size:12px;color:rgba(255,255,255,.6);letter-spacing:.05em}
+.main{max-width:960px;margin:0 auto;padding:1.8rem 1.5rem 4rem}
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:12px;
+  box-shadow:0 4px 20px rgba(74,47,88,.07);
+  padding:1.4rem 1.5rem;
+  margin-bottom:1.4rem;
+}
+.card h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:21px;
+  font-weight:500;
+  color:var(--plum);
+  margin-bottom:.9rem;
+}
+.f-row{margin-bottom:.9rem}
+.f-label{
+  display:block;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--teal);
+  margin-bottom:4px;
+}
+.f-input{
+  width:100%;
+  font-family:'Jost',sans-serif;
+  font-size:14px;
+  background:var(--cream);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:9px 12px;
+  outline:none;
+}
+.f-input:focus{border-color:var(--plum);box-shadow:0 0 0 3px rgba(74,47,88,.1)}
+.f-help{font-size:11px;color:var(--teal-mist);margin-top:4px;font-style:italic}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+.btn{
+  font-family:'Jost',sans-serif;
+  font-size:13.5px;
+  font-weight:500;
+  letter-spacing:.04em;
+  border:none;
+  border-radius:22px;
+  padding:10px 22px;
+  cursor:pointer;
+  background:var(--plum);
+  color:#fff;
+  transition:transform .15s,box-shadow .15s;
+}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(74,47,88,.3)}
+.btn:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:none}
+.btn-small{
+  padding:5px 13px;
+  font-size:12px;
+  background:#fff;
+  color:var(--teal);
+  border:1px solid var(--border);
+}
+.btn-small:hover{background:var(--cream);box-shadow:none}
+.error{
+  background:#FDECEC;
+  border:1px solid #E8B4B4;
+  color:#8C2B2B;
+  border-radius:8px;
+  padding:9px 13px;
+  font-size:13px;
+  margin-bottom:.9rem;
+}
+/* result / links panel */
+.links-panel{
+  border:1.5px solid var(--gold);
+  border-radius:10px;
+  background:#FFFDF8;
+  padding:1.1rem 1.2rem;
+  margin-top:1rem;
+}
+.links-panel h3{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;
+  font-weight:500;
+  color:var(--gold-deep);
+  margin-bottom:.7rem;
+}
+.link-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:.6rem;
+  flex-wrap:wrap;
+}
+.link-tag{
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--teal);
+  flex:0 0 84px;
+}
+.link-val{
+  flex:1;
+  min-width:200px;
+  font-size:12px;
+  font-family:ui-monospace,monospace;
+  background:var(--cream);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:7px 9px;
+  overflow-wrap:anywhere;
+}
+.host-warn{font-size:11px;color:#8C2B2B;margin:.2rem 0 .6rem}
+.qr-box{text-align:center;margin-top:.8rem}
+.qr-box img{border:8px solid #fff;box-shadow:0 2px 12px rgba(74,47,88,.15);border-radius:6px}
+.qr-box p{font-size:11px;color:var(--teal-mist);margin-top:6px;font-style:italic}
+/* events table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{
+  text-align:left;
+  font-size:10.5px;
+  font-weight:600;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+  color:var(--teal-mist);
+  padding:6px 10px;
+  border-bottom:1px solid var(--border);
+}
+td{padding:8px 10px;border-bottom:1px solid #F3EDE4;vertical-align:middle}
+.status{
+  font-size:10.5px;
+  font-weight:600;
+  padding:2px 9px;
+  border-radius:10px;
+}
+.status.open{background:#E9F3EE;color:#1E6141}
+.status.locked{background:#F3F0F5;color:#6B5E75}
+.muted{color:var(--teal-mist)}
+.notice{
+  background:#FFF4DB;
+  border:1px solid #F5B841;
+  color:#7A5200;
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:13px;
+  margin-bottom:1.2rem;
+}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div>
+    <h1 class="hdr-title">🎈 Seller Console</h1>
+    <p class="hdr-sub">Birthday Wishes Wall · one wall per sale</p>
+  </div>
+  <button class="btn btn-small" id="btn-lock-console" hidden>Lock console</button>
+</header>
+
+<main class="main">
+
+  <div class="notice" id="config-notice" hidden>
+    This console is not connected to a backend yet — fill in the
+    <code>SUPABASE_URL</code> and <code>SUPABASE_ANON_KEY</code> constants in this file (see README).
+  </div>
+
+  <!-- Unlock -->
+  <section class="card" id="unlock-card">
+    <h2>Unlock</h2>
+    <div class="error" id="unlock-error" hidden></div>
+    <form id="unlock-form">
+      <div class="f-row">
+        <label class="f-label" for="a-key">Admin key</label>
+        <input class="f-input" id="a-key" type="password" autocomplete="current-password" placeholder="Your seller admin key" required>
+        <p class="f-help">The secret you set in seller_config when running the schema. Kept only in this tab.</p>
+      </div>
+      <button type="submit" class="btn" id="btn-unlock">Unlock</button>
+    </form>
+  </section>
+
+  <!-- Create event -->
+  <section class="card" id="create-card" hidden>
+    <h2>Create an event <span class="muted" style="font-size:12px;font-family:'Jost',sans-serif">(one per sale)</span></h2>
+    <div class="error" id="create-error" hidden></div>
+    <form id="create-form">
+      <div class="grid2">
+        <div class="f-row">
+          <label class="f-label" for="c-honoree">Birthday person <em style="text-transform:none;font-weight:400">(optional — buyer can set it)</em></label>
+          <input class="f-input" id="c-honoree" type="text" maxlength="40" placeholder="e.g. Maya">
+        </div>
+        <div class="f-row">
+          <label class="f-label" for="c-slug">Wall address (slug)</label>
+          <input class="f-input" id="c-slug" type="text" maxlength="60" pattern="[a-z0-9-]{3,60}" placeholder="e.g. maya-30" required>
+          <p class="f-help">Lowercase letters, numbers and dashes. Becomes ?e=&lt;slug&gt; in the links.</p>
+        </div>
+        <div class="f-row">
+          <label class="f-label" for="c-date">Event date <em style="text-transform:none;font-weight:400">(optional)</em></label>
+          <input class="f-input" id="c-date" type="date">
+        </div>
+        <div class="f-row">
+          <label class="f-label" for="c-lock">Lock wall after event (days)</label>
+          <input class="f-input" id="c-lock" type="number" min="0" max="90" step="1" value="7">
+          <p class="f-help">With no event date, the wall locks 60 days after creation.</p>
+        </div>
+      </div>
+      <button type="submit" class="btn" id="btn-create">➕ Create event</button>
+    </form>
+    <div class="links-panel" id="links-panel" hidden>
+      <h3 id="links-title">Links for the buyer</h3>
+      <div class="link-row">
+        <span class="link-tag">Guest link</span>
+        <span class="link-val" id="link-guest"></span>
+        <button class="btn btn-small" data-copy="link-guest">Copy</button>
+      </div>
+      <div class="link-row">
+        <span class="link-tag">Host link</span>
+        <span class="link-val" id="link-host"></span>
+        <button class="btn btn-small" data-copy="link-host">Copy</button>
+      </div>
+      <p class="host-warn">⚠ The host link is the buyer's private key to their wall — send it only to them.</p>
+      <div class="qr-box" id="qr-box">
+        <div id="qr"></div>
+        <p>QR of the guest link — the buyer can print it for the party table.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Events list -->
+  <section class="card" id="events-card" hidden>
+    <h2>Your events</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Slug</th><th>Birthday person</th><th>Event date</th>
+          <th>Wishes</th><th>🎁</th><th>Status</th><th></th>
+        </tr></thead>
+        <tbody id="events-body"></tbody>
+      </table>
+    </div>
+    <p class="muted" id="events-empty" style="font-size:13px;padding:10px" hidden>No events yet — create your first above.</p>
+  </section>
+</main>
+
+<script src="qr.js"></script>
+<script>
+'use strict';
+
+/* ══ Deployment config — keep identical to index.html ══ */
+const SUPABASE_URL='';
+const SUPABASE_ANON_KEY='';
+
+const CONFIGURED=!!(SUPABASE_URL&&SUPABASE_ANON_KEY);
+let adminKey=sessionStorage.getItem('bw-admin-key')||'';
+
+/* Where guest/host links point: index.html next to this file. */
+const WALL_URL=new URL('index.html',location.href).href;
+
+async function rpc(fn,args){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      apikey:SUPABASE_ANON_KEY,
+      Authorization:'Bearer '+SUPABASE_ANON_KEY
+    },
+    body:JSON.stringify(args||{})
+  });
+  const text=await r.text();
+  if(!r.ok){
+    let m=text||('Request failed ('+r.status+')');
+    try{m=JSON.parse(text).message||m}catch(_){/* plain text */}
+    throw new Error(m);
+  }
+  return text?JSON.parse(text):null;
+}
+
+function showError(id,msg){
+  const el=document.getElementById(id);
+  el.textContent=msg;
+  el.hidden=false;
+}
+function hideError(id){document.getElementById(id).hidden=true}
+
+function links(slug,token){
+  return{
+    guest:`${WALL_URL}?e=${encodeURIComponent(slug)}`,
+    host:`${WALL_URL}?e=${encodeURIComponent(slug)}&host=${encodeURIComponent(token)}`
+  };
+}
+
+function renderQR(el,text){
+  el.innerHTML='';
+  if(typeof qrcode!=='function')return;
+  try{
+    const qr=qrcode(0,'M');
+    qr.addData(text);
+    qr.make();
+    el.innerHTML=qr.createImgTag(5,8);
+    el.querySelector('img').alt='QR code for '+text;
+  }catch(e){/* text too long for QR — link rows still shown */}
+}
+
+function showLinks(slug,token){
+  const l=links(slug,token);
+  document.getElementById('links-title').textContent='Links for “'+slug+'”';
+  document.getElementById('link-guest').textContent=l.guest;
+  document.getElementById('link-host').textContent=l.host;
+  renderQR(document.getElementById('qr'),l.guest);
+  document.getElementById('links-panel').hidden=false;
+  document.getElementById('links-panel').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+document.querySelectorAll('[data-copy]').forEach(btn=>{
+  btn.addEventListener('click',async()=>{
+    const text=document.getElementById(btn.dataset.copy).textContent;
+    try{await navigator.clipboard.writeText(text)}
+    catch(e){
+      const ta=document.createElement('textarea');
+      ta.value=text;document.body.appendChild(ta);ta.select();
+      document.execCommand('copy');ta.remove();
+    }
+    const old=btn.textContent;
+    btn.textContent='Copied!';
+    setTimeout(()=>btn.textContent=old,1200);
+  });
+});
+
+/* ── Unlock ────────────────────────────────────── */
+async function unlock(key){
+  const events=await rpc('list_events',{p_admin_key:key});
+  adminKey=key;
+  sessionStorage.setItem('bw-admin-key',key);
+  document.getElementById('unlock-card').hidden=true;
+  document.getElementById('create-card').hidden=false;
+  document.getElementById('events-card').hidden=false;
+  document.getElementById('btn-lock-console').hidden=false;
+  renderEvents(events||[]);
+}
+
+document.getElementById('unlock-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  hideError('unlock-error');
+  const key=document.getElementById('a-key').value;
+  const btn=document.getElementById('btn-unlock');
+  btn.disabled=true;
+  try{await unlock(key)}
+  catch(err){
+    showError('unlock-error',
+      /authoris|authoriz/i.test(err.message)
+        ?'That admin key is not right — check the secret you set in seller_config.'
+        :'Could not reach the backend: '+err.message);
+  }finally{btn.disabled=false}
+});
+
+document.getElementById('btn-lock-console').addEventListener('click',()=>{
+  sessionStorage.removeItem('bw-admin-key');
+  location.reload();
+});
+
+/* ── Create event ──────────────────────────────── */
+const honoreeEl=document.getElementById('c-honoree');
+const slugEl=document.getElementById('c-slug');
+let slugTouched=false;
+slugEl.addEventListener('input',()=>slugTouched=true);
+honoreeEl.addEventListener('input',()=>{
+  if(slugTouched)return;
+  const base=honoreeEl.value.trim().toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g,'')
+    .replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,20);
+  slugEl.value=base?base+'-'+Math.random().toString(36).slice(2,6):'';
+});
+
+document.getElementById('create-form').addEventListener('submit',async e=>{
+  e.preventDefault();
+  hideError('create-error');
+  const btn=document.getElementById('btn-create');
+  btn.disabled=true;
+  try{
+    const res=await rpc('create_event',{
+      p_admin_key:adminKey,
+      p_slug:slugEl.value.trim(),
+      p_honoree:honoreeEl.value.trim(),
+      p_event_date:document.getElementById('c-date').value||null,
+      p_lock_days:parseInt(document.getElementById('c-lock').value,10)||7
+    });
+    const ev=res&&res[0];
+    if(!ev)throw new Error('no event returned');
+    showLinks(ev.slug,ev.host_token);
+    honoreeEl.value='';slugEl.value='';slugTouched=false;
+    renderEvents(await rpc('list_events',{p_admin_key:adminKey})||[]);
+  }catch(err){
+    showError('create-error',
+      /taken/i.test(err.message)?'That wall address is already taken — pick another slug.'
+      :/slug|check/i.test(err.message)?'Slug must be 3–60 lowercase letters, numbers or dashes.'
+      :err.message);
+  }finally{btn.disabled=false}
+});
+
+/* ── Events table ──────────────────────────────── */
+function renderEvents(events){
+  const body=document.getElementById('events-body');
+  body.innerHTML='';
+  document.getElementById('events-empty').hidden=events.length>0;
+  events.forEach(ev=>{
+    const tr=document.createElement('tr');
+    const isLocked=ev.locks_at&&Date.now()>Date.parse(ev.locks_at);
+
+    const tds={
+      slug:ev.slug,
+      honoree:ev.honoree||'—',
+      date:ev.event_date||'—',
+      wishes:String(ev.wish_count),
+      givers:String(ev.giver_count)
+    };
+    for(const k of['slug','honoree','date','wishes','givers']){
+      const td=document.createElement('td');
+      td.textContent=tds[k];
+      if(k==='slug')td.style.fontFamily='ui-monospace,monospace';
+      tr.appendChild(td);
+    }
+    const tdStatus=document.createElement('td');
+    const st=document.createElement('span');
+    st.className='status '+(isLocked?'locked':'open');
+    st.textContent=isLocked?'Locked':'Open';
+    tdStatus.appendChild(st);
+    tr.appendChild(tdStatus);
+
+    const tdAct=document.createElement('td');
+    const linksBtn=document.createElement('button');
+    linksBtn.className='btn btn-small';
+    linksBtn.textContent='Links';
+    linksBtn.addEventListener('click',()=>showLinks(ev.slug,ev.host_token));
+    tdAct.appendChild(linksBtn);
+    tr.appendChild(tdAct);
+
+    body.appendChild(tr);
+  });
+}
+
+/* ── Init ──────────────────────────────────────── */
+if(!CONFIGURED){
+  document.getElementById('config-notice').hidden=false;
+  document.getElementById('unlock-card').hidden=true;
+}else if(adminKey){
+  unlock(adminKey).catch(()=>{
+    sessionStorage.removeItem('bw-admin-key');
+    adminKey='';
+  });
+}
+</script>
+</body>
+</html>
