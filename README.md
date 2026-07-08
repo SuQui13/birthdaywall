@@ -1,64 +1,92 @@
 # 🎈 Birthday Wishes Wall
 
-A festive, single-file web app for collecting birthday wishes at a celebration —
-balloons, bunting, streamers, confetti and all.
+A festive microapp for collecting birthday wishes at a celebration — balloons,
+bunting, streamers, confetti and all. Sold **per event**: each purchase gets one
+wall with its own link, its own birthday person, and its own group-gift kitty.
 
 ## Features
 
 - **Guest wishes** — guests pin a message with their name and a category
-  (😂 Funny · 💖 Sweet · ✨ Inspiring), with category filters on the wall.
-- **Photo upload** — optional photo per wish, downscaled in the browser so it
-  fits in local storage.
-- **Custom birthday person** — the host sets the birthday person's name in
-  *⚙️ Host setup*; the title, subtitle, and reveal all address them by name.
-- **Group gift kitty** — the host can add a payment link (PayPal.me, Bizum,
-  Verse, bank note…) and a private goal. Guests tap *Chip in*, which opens the
-  payment link — money flows directly through the payment provider, never
-  through this page.
-- **Amount-free progress** — the progress bar only ever shows a percentage and
-  the number of contributors. The goal and all amounts stay secret.
-- **Contributor symbol** — wishes from guests who chipped in carry a 🎁 next to
-  their name (never the amount).
+  (😂 Funny · 💖 Sweet · ✨ Inspiring), plus an optional photo (downscaled in
+  the browser before upload).
+- **Custom birthday person** — the host sets the name; the title, subtitle and
+  reveal all address them by name.
+- **Group gift kitty** — the host adds a payment link (PayPal.me, Bizum,
+  Verse, …) and a private goal. Guests tap *Chip in*, which opens the link —
+  money flows directly through the payment provider, never through this app.
+- **Amount-free progress** — guests only ever see a percentage and a
+  contributor count. The goal and all amounts stay inside the database; the
+  API physically never returns them.
+- **Contributor symbol** — wishes from guests who chipped in carry a 🎁 next
+  to their name (never the amount).
 - **Reveal mode** — a full-screen experience for the birthday person: wishes
-  unwrap one by one with pop-in animations and confetti, ending in a
-  "Happy Birthday, {name}!" finale that credits every guest.
+  unwrap one by one with confetti, ending in a "Happy Birthday, {name}!" finale.
+- **Host vs guest links** — the host link (secret token) unlocks setup, the
+  reveal, and wish moderation; the guest link can only add wishes.
+- **One event, enforced** — each wall has a unique slug, auto-locks after the
+  event date (becoming a read-only keepsake), caps at 150 wishes / 75 photos,
+  and the birthday person's name is fixed once wishes start arriving.
 
-## Quick start
+## Two modes
 
-It's one file with zero dependencies:
+| | |
+|---|---|
+| **Demo mode** | Open `index.html` with no configuration — wishes live in that browser's localStorage. Perfect as the live demo on your sales page, or as a single-device party kiosk. |
+| **Event mode** | With Supabase configured and `?e=<slug>` in the URL, everyone shares one wall — guests post from their own phones. This is what you sell. |
 
-1. Open `index.html` in any browser, **or** enable GitHub Pages
-   (Settings → Pages → deploy from `main`) to host it online.
-2. Tap **⚙️ Host setup** and enter the birthday person's name, and optionally a
-   gift-kitty link and goal.
-3. Hand the device around (or share the page URL) and let guests pin wishes.
-4. On the big day, tap **🎁 Reveal for the Birthday Person**.
+## Deploying (one-time, ~15 minutes)
 
-## How data is stored (important)
+1. **Create a Supabase project** (free tier) at [supabase.com](https://supabase.com).
+2. In the dashboard, open **SQL Editor**, paste the contents of
+   [`supabase/schema.sql`](supabase/schema.sql), and run it.
+3. In **Project Settings → API**, copy the *Project URL* and the *anon public*
+   key, and paste them into the two constants at the top of the `<script>`
+   block in `index.html`:
+   ```js
+   const SUPABASE_URL='https://YOURPROJECT.supabase.co';
+   const SUPABASE_ANON_KEY='eyJ…';
+   ```
+   (The anon key is designed to be public — the SQL schema locks down what it
+   can do.)
+4. Host `index.html` anywhere static — GitHub Pages (Settings → Pages → deploy
+   from `main`) works free.
 
-All wishes, photos, and settings live in the **browser's localStorage** of the
-device viewing the page. That makes it perfect as a *party kiosk* — one shared
-tablet/laptop that guests pass around — or as a personal page.
+## Creating an event (one per sale, ~2 minutes)
 
-It also means:
+In the Supabase **SQL Editor**, run:
 
-- Guests visiting the hosted page on **their own phones each see their own
-  wall**, not a shared one. A shared online wall needs a small backend
-  (e.g. Supabase/Firebase) — see roadmap below.
-- Gift amounts entered by guests are stored in plain text in localStorage of
-  that device. They're never displayed, but anyone with the device could open
-  developer tools and read them. Fine for a party; not for strangers.
-- Clearing the browser's site data erases the wall. Export before that.
+```sql
+insert into events (slug, honoree, event_date, locks_at)
+values ('maya-30', 'Maya', '2026-08-15',
+        timestamptz '2026-08-15' + interval '7 days')
+returning slug, host_token;
+```
 
-## Productizing roadmap
+Then email the buyer their two links:
 
-Ideas if you want to sell this as a service:
+- **Guest link** (share with everyone): `https://YOUR-PAGE/?e=maya-30`
+- **Host link** (keep private): `https://YOUR-PAGE/?e=maya-30&host=<host_token>`
 
-1. **Shared walls**: move wishes to a hosted database with one wall per event
-   (unique link per celebration) so guests can post from their own phones.
-2. **Real payments**: integrate Stripe Payment Links or PayPal checkout per
-   event instead of a pasted link; payouts go to the host.
-3. **Host accounts**: sign-in, event dashboard, moderation (approve/hide
-   wishes), and a private view of the gift total.
-4. **Extras**: themes, video wishes, QR-code invitations, printable keepsake
-   book of all wishes.
+The host opens their link, taps **⚙️ Host setup**, and customizes the name,
+gift-kitty link, and goal themselves — you don't have to do anything else.
+`locks_at` is when the wall closes to new wishes and becomes a keepsake.
+
+## Privacy model
+
+- The database tables are fully closed to the public API key (row-level
+  security with no policies). Every read and write goes through server-side
+  functions that choose exactly which columns leave the database.
+- Gift **amounts** and the **goal** are returned by no function. Guests' apps
+  receive only `pct` (0–100, capped) and a contributor count — nothing to find
+  in developer tools.
+- The **host token** is only ever compared, never returned.
+- Wishes are visible to anyone who has the guest link — say so on the wall's
+  invite so guests know it's a shared space.
+
+## Roadmap
+
+- **Phase 2 — self-serve sales**: a checkout webhook (Lemon Squeezy / Paddle /
+  Stripe) that runs the event insert automatically and emails the buyer their
+  links, plus a QR code per event for invitations.
+- **Phase 3 — polish**: theme picker, keepsake PDF export of all wishes after
+  the event, video wishes.

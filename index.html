@@ -10,6 +10,7 @@
 <style>
 /* ─── Reset & Base ─────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 html{font-size:15px;-webkit-font-smoothing:antialiased}
 body{
   font-family:'Jost',sans-serif;
@@ -145,6 +146,32 @@ body{
   50%{transform:translateY(-56vh) translateX(-14px) rotate(-3deg)}
   75%{transform:translateY(-84vh) translateX(16px) rotate(2deg)}
   100%{transform:translateY(-118vh) translateX(0) rotate(-2deg)}
+}
+
+/* ─── Notice bar & demo badge ──────────────────── */
+.notice{
+  position:relative;
+  z-index:4;
+  background:var(--funny-bg);
+  color:var(--funny-ink);
+  border-bottom:1px solid var(--funny);
+  text-align:center;
+  padding:.55rem 1rem;
+  font-size:12.5px;
+  letter-spacing:.03em;
+}
+.demo-badge{
+  position:fixed;
+  bottom:14px;left:14px;
+  z-index:900;
+  background:var(--plum-deep);
+  color:#fff;
+  font-size:11px;
+  letter-spacing:.05em;
+  padding:6px 13px;
+  border-radius:16px;
+  opacity:.85;
+  pointer-events:none;
 }
 
 /* ─── Page Header ──────────────────────────────── */
@@ -505,6 +532,7 @@ body{
   transition:transform .15s,box-shadow .15s;
 }
 .btn-submit:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(74,47,88,.3)}
+.btn-submit:disabled{opacity:.6;cursor:wait;transform:none;box-shadow:none}
 
 /* ─── Filters ──────────────────────────────────── */
 .wall-hdr{
@@ -914,6 +942,9 @@ body{
 <!-- ── Bunting flags ── -->
 <div class="bunting" id="bunting" aria-hidden="true"></div>
 
+<!-- ── Notice bar ── -->
+<div class="notice" id="notice" hidden></div>
+
 <!-- ── Side streamers ── -->
 <div class="streamer s1" aria-hidden="true"></div>
 <div class="streamer s2" aria-hidden="true"></div>
@@ -930,7 +961,7 @@ body{
   <p class="wall-sub" id="wall-sub">Leave a wish for the birthday star — funny, sweet, or inspiring. Add a photo if you like!</p>
   <div class="header-actions">
     <button class="btn btn-reveal" id="btn-reveal">🎁 Reveal for the Birthday Person</button>
-    <a class="btn btn-ghost" href="#add-wish">✍️ Add your wish</a>
+    <a class="btn btn-ghost" href="#add-wish" id="btn-add">✍️ Add your wish</a>
     <button class="btn btn-ghost" id="btn-setup">⚙️ Host setup</button>
   </div>
 </header>
@@ -999,7 +1030,7 @@ body{
       </div>
     </div>
 
-    <button type="submit" class="btn-submit">🎉 Pin my wish to the wall</button>
+    <button type="submit" class="btn-submit" id="btn-pin">🎉 Pin my wish to the wall</button>
   </form>
 
   <!-- Wall -->
@@ -1023,7 +1054,7 @@ body{
 <div id="setup" role="dialog" aria-modal="true" aria-label="Host setup">
   <form class="setup-card" id="setup-form">
     <h2 class="setup-title">⚙️ Host setup</h2>
-    <p class="setup-hint">Personalise the wall for your celebration. Settings are saved in this browser only — set the wall up on the device (or hosted page) your guests will use.</p>
+    <p class="setup-hint" id="setup-hint">Personalise the wall for your celebration.</p>
 
     <div class="f-row">
       <label class="f-label" for="s-name">Birthday person's name</label>
@@ -1037,7 +1068,7 @@ body{
     </div>
 
     <div class="f-row">
-      <label class="f-label" for="s-goal">Gift goal <em style="text-transform:none;font-weight:400;letter-spacing:0">(optional — never shown)</em></label>
+      <label class="f-label" for="s-goal">Gift goal <em style="text-transform:none;font-weight:400;letter-spacing:0">(optional — never shown to guests)</em></label>
       <input class="f-input" id="s-goal" type="number" min="0" step="0.01" inputmode="decimal" placeholder="e.g. 300">
       <p class="gift-note">Sets the target for the progress bar. Guests only ever see a percentage — never the goal or any amounts.</p>
     </div>
@@ -1058,12 +1089,21 @@ body{
 <!-- ── Confetti layer ── -->
 <div id="confetti" aria-hidden="true"></div>
 
+<!-- ── Demo badge ── -->
+<div class="demo-badge" id="demo-badge" hidden>🧪 Demo mode — wishes stay in this browser</div>
+
 <footer class="page-footer">
   <span>Birthday Wishes Wall</span> &nbsp;·&nbsp; wishes, photos &amp; a group gift — all in one festive place
 </footer>
 
 <script>
 'use strict';
+
+/* ══ Deployment config ══════════════════════════════════════
+   Fill these in after creating your Supabase project (see the
+   README). Leave both empty to run in local demo mode.        */
+const SUPABASE_URL='';
+const SUPABASE_ANON_KEY='';
 
 /* ── Constants ─────────────────────────────────── */
 const KEY='bw-wishes-v1';
@@ -1075,44 +1115,143 @@ const CATS={
 };
 const PARTY=['#F2766B','#F5B841','#7BC4A4','#7FA8D9','#E58FB1','#A98BC4','#D8C29C'];
 
+/* ── Mode ──────────────────────────────────────── */
+const qp=new URLSearchParams(location.search);
+const EVENT=(qp.get('e')||'').trim();
+const HOST_TOKEN=(qp.get('host')||'').trim();
+const REMOTE=!!(SUPABASE_URL&&SUPABASE_ANON_KEY&&EVENT);
+let isHost=!REMOTE;   // demo mode acts as host so everything can be tried
+let locked=false;
+
 /* ── State ─────────────────────────────────────── */
-let wishes=load();
-let settings=loadSettings();
+let wishes=[];   // {id,name,msg,cat,photo,gift,ts[,amt in demo mode only]}
+let settings={honoree:'',payLink:'',goal:0,hasGoal:false};
+let progress={pct:null,givers:0};
 let filter='all';
 let pendingPhoto=null;
 
-function load(){
+/* ── Local (demo) persistence ──────────────────── */
+function loadLocal(){
   try{
     const raw=localStorage.getItem(KEY);
     const arr=raw?JSON.parse(raw):[];
     return Array.isArray(arr)?arr.filter(w=>w&&w.name&&w.msg&&CATS[w.cat]):[];
   }catch(e){return[]}
 }
-function persist(){
+function persistLocal(){
   try{
     localStorage.setItem(KEY,JSON.stringify(wishes));
     return true;
   }catch(e){return false}
 }
-function loadSettings(){
+function loadLocalSettings(){
   try{
     const s=JSON.parse(localStorage.getItem(SKEY)||'{}');
     return{
       honoree:typeof s.honoree==='string'?s.honoree:'',
       payLink:typeof s.payLink==='string'?s.payLink:'',
-      goal:typeof s.goal==='number'&&s.goal>0?s.goal:0
+      goal:typeof s.goal==='number'&&s.goal>0?s.goal:0,
+      hasGoal:false
     };
-  }catch(e){return{honoree:'',payLink:'',goal:0}}
+  }catch(e){return{honoree:'',payLink:'',goal:0,hasGoal:false}}
 }
-function persistSettings(){
-  try{localStorage.setItem(SKEY,JSON.stringify(settings))}catch(e){}
+function persistLocalSettings(){
+  try{localStorage.setItem(SKEY,JSON.stringify({honoree:settings.honoree,payLink:settings.payLink,goal:settings.goal}))}catch(e){}
 }
 
-/* ── Settings applied to the page ──────────────── */
+/* ── Remote backend (Supabase PostgREST RPC) ───── */
+async function rpc(fn,args){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`,{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      apikey:SUPABASE_ANON_KEY,
+      Authorization:'Bearer '+SUPABASE_ANON_KEY
+    },
+    body:JSON.stringify(args||{})
+  });
+  const text=await r.text();
+  if(!r.ok){
+    let m=text||('Request failed ('+r.status+')');
+    try{m=JSON.parse(text).message||m}catch(_){/* plain text error */}
+    throw new Error(m);
+  }
+  return text?JSON.parse(text):null;
+}
+function friendlyError(err){
+  const m=(err&&err.message||'').toLowerCase();
+  if(m.includes('honoree'))return'The birthday person’s name can’t change once wishes have been pinned.';
+  if(m.includes('locked'))return'This wall is closed — the celebration is over. 🎂';
+  if(m.includes('limit'))return'The wall is full — what a loved birthday star! 🎈';
+  if(m.includes('not found'))return'This wall was not found — check the link.';
+  if(m.includes('authorised')||m.includes('authorized'))return'This host link is not valid.';
+  return'Something went wrong — please try again. ('+(err&&err.message||'unknown error')+')';
+}
+
+async function loadRemote(){
+  const evs=await rpc('public_event',{p_slug:EVENT});
+  if(!evs||!evs.length){
+    fatal('This wall was not found — double-check the link you were sent.');
+    return;
+  }
+  const ev=evs[0];
+  settings.honoree=ev.honoree||'';
+  settings.payLink=ev.pay_link||'';
+  settings.hasGoal=!!ev.has_goal;
+  locked=!!ev.locked;
+
+  if(HOST_TOKEN){
+    let ok=false;
+    try{ok=(await rpc('verify_host',{p_slug:EVENT,p_token:HOST_TOKEN}))===true}catch(e){ok=false}
+    isHost=ok;
+    if(ok){
+      try{
+        const hs=await rpc('get_host_settings',{p_slug:EVENT,p_token:HOST_TOKEN});
+        if(hs&&hs.length)settings.goal=Number(hs[0].goal)||0;
+      }catch(e){/* non-fatal */}
+    }else{
+      showNotice('This host link is not valid — showing the guest view instead.');
+    }
+  }
+  await refreshRemote();
+  applySettings();
+}
+
+async function refreshRemote(){
+  const[ws,pr]=await Promise.all([
+    rpc('get_wishes',{p_slug:EVENT}),
+    rpc('get_progress',{p_slug:EVENT})
+  ]);
+  wishes=(ws||[]).map(w=>({
+    id:w.id,name:w.name,msg:w.msg,cat:w.cat,photo:w.photo,
+    gift:!!w.gift,ts:Date.parse(w.created_at)||Date.now()
+  }));
+  const p=(pr&&pr[0])||{};
+  progress={pct:p.pct==null?null:Number(p.pct),givers:Number(p.givers)||0};
+  renderWall();
+}
+
+/* ── UI helpers ────────────────────────────────── */
+function showNotice(msg){
+  const n=document.getElementById('notice');
+  n.textContent=msg;
+  n.hidden=false;
+}
+function fatal(msg){
+  document.querySelector('.main').innerHTML=
+    `<div class="empty"><span class="big">🔎</span><p></p></div>`;
+  document.querySelector('.main .empty p').textContent=msg;
+  document.getElementById('btn-reveal').hidden=true;
+  document.getElementById('btn-setup').hidden=true;
+  document.getElementById('btn-add').hidden=true;
+}
+function hasGoal(){return REMOTE?settings.hasGoal:settings.goal>0}
 function payHref(){
   if(!settings.payLink)return'';
   return/^https?:\/\//i.test(settings.payLink)?settings.payLink:'https://'+settings.payLink;
 }
+
+/* ── Settings applied to the page ──────────────── */
 function applySettings(){
   const who=settings.honoree;
   document.title=who?`Wishes for ${who} · Birthday Wishes Wall`:'Birthday Wishes Wall';
@@ -1120,36 +1259,54 @@ function applySettings(){
   document.getElementById('wall-sub').textContent=
     `Leave a wish for ${who||'the birthday star'} — funny, sweet, or inspiring. Add a photo if you like!`;
 
+  // host-only controls
+  document.getElementById('btn-setup').hidden=!isHost;
+  document.getElementById('btn-reveal').hidden=!isHost;
+
+  // locked walls become read-only keepsakes
+  document.getElementById('add-wish').hidden=locked;
+  document.getElementById('btn-add').hidden=locked;
+  if(locked)showNotice(`This wall is closed — it lives on as a keepsake for ${who||'the birthday star'}. 🎁`);
+
   // gift kitty links
   const href=payHref();
   const gwPay=document.getElementById('gw-pay');
   const formPay=document.getElementById('gift-pay-link');
-  gwPay.hidden=formPay.hidden=!href;
+  gwPay.hidden=!href||locked;
+  formPay.hidden=!href;
   if(href){gwPay.href=formPay.href=href}
 
-  // secret amount field only matters when a goal is set
-  document.getElementById('f-amount').hidden=!settings.goal;
+  // the secret amount field only matters when a goal is set
+  document.getElementById('f-amount').hidden=!hasGoal();
 
   renderGoal();
 }
 
 /* ── Gift goal progress (never shows amounts) ──── */
+function computeLocalProgress(){
+  const givers=wishes.filter(w=>w.gift).length;
+  const raised=wishes.reduce((s,w)=>s+(w.gift&&typeof w.amt==='number'?w.amt:0),0);
+  progress={
+    pct:settings.goal>0?Math.min(100,Math.round(raised/settings.goal*100)):null,
+    givers
+  };
+}
 function renderGoal(){
+  if(!REMOTE)computeLocalProgress();
   const widget=document.getElementById('goal-widget');
-  const hasKitty=settings.goal>0||!!settings.payLink;
+  const hasKitty=hasGoal()||!!settings.payLink;
   widget.hidden=!hasKitty;
   if(!hasKitty)return;
 
   document.getElementById('gw-title').textContent=
     `🎁 Group Gift${settings.honoree?' for '+settings.honoree:''}`;
 
-  const givers=wishes.filter(w=>w.gift).length;
-  const raised=wishes.reduce((s,w)=>s+(w.gift&&typeof w.amt==='number'?w.amt:0),0);
   const bar=document.getElementById('gw-bar');
   const meta=document.getElementById('gw-meta');
+  const givers=progress.givers;
 
-  if(settings.goal>0){
-    const pct=Math.min(100,Math.round(raised/settings.goal*100));
+  if(hasGoal()){
+    const pct=progress.pct==null?0:progress.pct;
     bar.hidden=false;
     document.getElementById('gw-fill').style.width=pct+'%';
     meta.innerHTML='';
@@ -1231,17 +1388,41 @@ document.getElementById('btn-setup').addEventListener('click',()=>{
   document.getElementById('s-name').value=settings.honoree;
   document.getElementById('s-pay').value=settings.payLink;
   document.getElementById('s-goal').value=settings.goal||'';
+  document.getElementById('setup-hint').textContent=REMOTE
+    ?'Personalise the wall for your celebration. Changes go live for every guest instantly.'
+    :'Personalise the wall for your celebration. Settings are saved in this browser only — set the wall up on the device your guests will use.';
   setupEl.classList.add('open');
 });
 document.getElementById('setup-cancel').addEventListener('click',()=>setupEl.classList.remove('open'));
 setupEl.addEventListener('click',e=>{if(e.target===setupEl)setupEl.classList.remove('open')});
-document.getElementById('setup-form').addEventListener('submit',e=>{
+document.getElementById('setup-form').addEventListener('submit',async e=>{
   e.preventDefault();
-  settings.honoree=document.getElementById('s-name').value.trim();
-  settings.payLink=document.getElementById('s-pay').value.trim();
+  const honoree=document.getElementById('s-name').value.trim();
+  const payLink=document.getElementById('s-pay').value.trim();
   const g=parseFloat(document.getElementById('s-goal').value);
-  settings.goal=isFinite(g)&&g>0?g:0;
-  persistSettings();
+  const goal=isFinite(g)&&g>0?g:0;
+
+  if(REMOTE){
+    try{
+      await rpc('update_settings',{
+        p_slug:EVENT,p_token:HOST_TOKEN,
+        p_honoree:honoree,p_pay_link:payLink,p_goal:goal
+      });
+    }catch(err){
+      alert(friendlyError(err));
+      return;
+    }
+    settings.honoree=honoree;
+    settings.payLink=payLink;
+    settings.goal=goal;
+    settings.hasGoal=goal>0;
+    await refreshRemote();
+  }else{
+    settings.honoree=honoree;
+    settings.payLink=payLink;
+    settings.goal=goal;
+    persistLocalSettings();
+  }
   applySettings();
   setupEl.classList.remove('open');
   confetti(40);
@@ -1308,7 +1489,17 @@ document.getElementById('photo-remove').addEventListener('click',()=>{
 });
 
 /* ── Form: submit ──────────────────────────────── */
-document.getElementById('add-wish').addEventListener('submit',e=>{
+function resetForm(){
+  document.getElementById('add-wish').reset();
+  document.getElementById('char-count').textContent='0';
+  chipsEl.querySelectorAll('.cat-chip').forEach(ch=>ch.classList.remove('sel-funny','sel-sweet','sel-inspiring'));
+  document.getElementById('gift-extra').classList.remove('show');
+  pendingPhoto=null;
+  previewImg.removeAttribute('src');
+  previewWrap.classList.remove('show');
+}
+
+document.getElementById('add-wish').addEventListener('submit',async e=>{
   e.preventDefault();
   const name=document.getElementById('f-name').value.trim();
   const msg=msgEl.value.trim();
@@ -1320,19 +1511,41 @@ document.getElementById('add-wish').addEventListener('submit',e=>{
     return;
   }
   const amtRaw=parseFloat(document.getElementById('f-amount').value);
+  const gift=giftCheck.checked;
+  const amt=gift&&isFinite(amtRaw)&&amtRaw>0?amtRaw:0;
+
+  if(REMOTE){
+    const btn=document.getElementById('btn-pin');
+    btn.disabled=true;
+    try{
+      await rpc('add_wish',{
+        p_slug:EVENT,p_name:name,p_msg:msg,p_cat:catInput.value,
+        p_photo:pendingPhoto,p_gift:gift,p_amt:amt
+      });
+      resetForm();
+      await refreshRemote();
+      confetti(60);
+      document.getElementById('wall').scrollIntoView({behavior:'smooth',block:'start'});
+    }catch(err){
+      alert(friendlyError(err));
+    }finally{
+      btn.disabled=false;
+    }
+    return;
+  }
+
+  // demo mode: localStorage
   const wish={
     id:Date.now().toString(36)+Math.random().toString(36).slice(2,7),
     name,msg,cat:catInput.value,
     photo:pendingPhoto,
-    gift:giftCheck.checked,
-    amt:giftCheck.checked&&isFinite(amtRaw)&&amtRaw>0?amtRaw:0,
+    gift,amt,
     ts:Date.now()
   };
   wishes.push(wish);
-  if(!persist()&&wish.photo){
-    // storage full — retry without the photo
+  if(!persistLocal()&&wish.photo){
     wish.photo=null;
-    if(persist()){
+    if(persistLocal()){
       alert('The wall’s photo storage is full, so your wish was saved without its photo.');
     }else{
       wishes.pop();
@@ -1340,13 +1553,7 @@ document.getElementById('add-wish').addEventListener('submit',e=>{
       return;
     }
   }
-  e.target.reset();
-  document.getElementById('char-count').textContent='0';
-  chipsEl.querySelectorAll('.cat-chip').forEach(ch=>ch.classList.remove('sel-funny','sel-sweet','sel-inspiring'));
-  document.getElementById('gift-extra').classList.remove('show');
-  pendingPhoto=null;
-  previewImg.removeAttribute('src');
-  previewWrap.classList.remove('show');
+  resetForm();
   renderWall();
   confetti(60);
   document.getElementById('wall').scrollIntoView({behavior:'smooth',block:'start'});
@@ -1417,18 +1624,27 @@ function renderWall(){
     date.textContent='Pinned '+new Date(w.ts).toLocaleDateString(undefined,{month:'short',day:'numeric'});
     card.appendChild(date);
 
-    const del=document.createElement('button');
-    del.className='wc-del';
-    del.type='button';
-    del.textContent='×';
-    del.setAttribute('aria-label','Remove this wish');
-    del.addEventListener('click',()=>{
-      if(!confirm('Remove the wish from '+w.name+'?'))return;
-      wishes=wishes.filter(x=>x.id!==w.id);
-      persist();
-      renderWall();
-    });
-    card.appendChild(del);
+    if(isHost&&!locked){
+      const del=document.createElement('button');
+      del.className='wc-del';
+      del.type='button';
+      del.textContent='×';
+      del.setAttribute('aria-label','Remove this wish');
+      del.addEventListener('click',async()=>{
+        if(!confirm('Remove the wish from '+w.name+'?'))return;
+        if(REMOTE){
+          try{
+            await rpc('delete_wish',{p_slug:EVENT,p_token:HOST_TOKEN,p_wish:w.id});
+            await refreshRemote();
+          }catch(err){alert(friendlyError(err))}
+        }else{
+          wishes=wishes.filter(x=>x.id!==w.id);
+          persistLocal();
+          renderWall();
+        }
+      });
+      card.appendChild(del);
+    }
 
     wall.appendChild(card);
   });
@@ -1565,8 +1781,25 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ── Init ──────────────────────────────────────── */
-applySettings();
-renderWall();
+(function init(){
+  if(REMOTE){
+    // hide host controls until the token is verified
+    document.getElementById('btn-setup').hidden=true;
+    document.getElementById('btn-reveal').hidden=true;
+    loadRemote().catch(err=>fatal('Could not load this wall: '+err.message));
+    // keep the wall fresh while guests post from their own phones
+    setInterval(()=>{
+      if(!document.hidden)refreshRemote().catch(()=>{});
+    },30000);
+  }else{
+    if(EVENT)showNotice('This page is not connected to a backend yet — running in demo mode.');
+    document.getElementById('demo-badge').hidden=false;
+    wishes=loadLocal();
+    settings=loadLocalSettings();
+    applySettings();
+    renderWall();
+  }
+})();
 </script>
 </body>
 </html>
