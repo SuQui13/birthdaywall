@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy · Birthday Wishes Wall</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{font-family:'Jost',sans-serif;background:#FFF8F0;color:#24152D}
+.page-header{
+  background:#4A2F58;color:#fff;text-align:center;padding:2.2rem 1.5rem;
+}
+.page-header .kicker{
+  font-family:'Cormorant Garamond',serif;font-size:11px;letter-spacing:.22em;
+  text-transform:uppercase;color:#D8C29C;display:block;margin-bottom:6px;
+}
+.page-header h1{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:34px}
+.main{max-width:680px;margin:0 auto;padding:2.2rem 1.5rem 4rem;line-height:1.7}
+h2{
+  font-family:'Cormorant Garamond',serif;font-weight:500;font-size:22px;
+  color:#4A2F58;margin:1.8rem 0 .5rem;
+}
+p,li{font-size:14px;font-weight:300;color:#3A2C44;margin-bottom:.6rem}
+ul{padding-left:1.2rem}
+strong{font-weight:500}
+.updated{font-size:12px;color:#6E98A0;font-style:italic}
+a{color:#2E5F66}
+.page-footer{
+  background:#4A2F58;color:rgba(255,255,255,.5);text-align:center;
+  padding:1.3rem 2rem;font-size:11px;letter-spacing:.06em;font-weight:300;
+}
+.page-footer a{color:#D8C29C;text-decoration:none}
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <span class="kicker">Birthday Wishes Wall</span>
+  <h1>Privacy, plainly</h1>
+</header>
+
+<main class="main">
+  <p class="updated">Last updated: July 2026</p>
+
+  <h2>What this is</h2>
+  <p>A Birthday Wishes Wall is a private web page for one celebration, where
+  invited guests leave wishes for the birthday person. This page explains what
+  information the wall stores and what happens to it.</p>
+
+  <h2>What we store</h2>
+  <ul>
+    <li><strong>Wishes</strong> — the name a guest types, their message, the
+    category they pick, and (optionally) a photo they upload.</li>
+    <li><strong>Gift participation</strong> — whether a guest marked
+    "I chipped in", and optionally an amount.</li>
+    <li><strong>Wall settings</strong> — the birthday person's first name, the
+    chosen theme, and the host's payment link and gift goal.</li>
+  </ul>
+  <p>That's the full list. There are no accounts, no passwords for guests, no
+  tracking pixels, no analytics, and no cookies. The wall doesn't collect
+  email addresses or phone numbers.</p>
+
+  <h2>Gift amounts stay secret</h2>
+  <p>If a guest enters a contribution amount, it is used for one thing only:
+  moving the progress bar. It is never displayed to anyone — not to other
+  guests, not to the birthday person — and the system is built so that
+  amounts physically never leave the database.</p>
+  <p>Payments themselves happen entirely on the payment service the host
+  chose (for example PayPal). The wall never sees, holds, or processes
+  money.</p>
+
+  <h2>Who can see the wall</h2>
+  <p>Each wall has its own unguessable link. Anyone who has the guest link can
+  read the wishes and add their own — so treat the link like a party
+  invitation and share it only with the guest list. Walls are not listed
+  anywhere or indexed by search engines through us.</p>
+
+  <h2>How long we keep it</h2>
+  <p>A wall accepts new wishes until shortly after the event date, then
+  becomes read-only. The stored wishes and photos are kept so the birthday
+  person can revisit them and print their keepsake, and are deleted on
+  request at any time (see below). Photos are resized on your device before
+  upload — full-size originals never leave your phone.</p>
+
+  <h2>Where it's stored</h2>
+  <p>Wall data is stored with our database provider,
+  <a href="https://supabase.com" rel="noopener">Supabase</a>, in the region
+  chosen when the service was set up.</p>
+
+  <h2>Your rights</h2>
+  <p>Hosts can delete any individual wish from their wall at any time using
+  their host link. To have a photo, a wish, or an entire wall permanently
+  deleted — or to ask anything about your data — write to
+  <strong>[YOUR-SUPPORT-EMAIL]</strong> and it will be handled within a few
+  days.</p>
+
+  <h2>The demo wall</h2>
+  <p>The <a href="index.html">try-it demo</a> stores everything only in your
+  own browser on your own device. Nothing you type in the demo is sent
+  anywhere.</p>
+</main>
+
+<footer class="page-footer">
+  <a href="landing.html">← Back to Birthday Wishes Wall</a>
+</footer>
+
+</body>
+</html>
